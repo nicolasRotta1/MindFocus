@@ -3,6 +3,7 @@ package com.example.habito_service.models;
 import com.example.habito_service.enums.FrequenciaHabito;
 import com.example.habito_service.enums.StatusHabito;
 import com.example.habito_service.enums.TipoHabito;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -40,18 +41,23 @@ public class Habito {
     @Column(nullable = false)
     private FrequenciaHabito frequencia = FrequenciaHabito.DIARIO; // padrão
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false) // Define o nome da coluna de chave estrangeira
+    @JsonIgnore // Evita loop infinito no Json
+    private Usuario usuario;
+
     public Habito() {}
 
-    public Habito(String nome, Boolean concluido, TipoHabito tipo,
-                  StatusHabito status, FrequenciaHabito frequencia) {
+    public Habito(String nome, Boolean concluido, TipoHabito tipo, StatusHabito status, FrequenciaHabito frequencia, Usuario usuario) {
         this.nome = nome;
         this.concluido = concluido;
         this.tipo = tipo;
         this.status = status;
         this.frequencia = frequencia;
+        this.usuario = usuario;
     }
 
-    // Getters e Setters
+// Getters e Setters
 
     public UUID getId() {
         return id;

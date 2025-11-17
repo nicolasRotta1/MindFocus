@@ -7,7 +7,9 @@ import jakarta.validation.constraints.Pattern;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -35,6 +37,9 @@ public class Usuario implements UserDetails {
     @NotBlank(message = "A senha não pode estar em branco")
     @Column(nullable = false)
     private String senha;
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Habito> habitos = new ArrayList<>();
 
     // Construtores
     public Usuario() {}
