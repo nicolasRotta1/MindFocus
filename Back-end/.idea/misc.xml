@@ -6,7 +6,6 @@
       <list>
         <option value="$PROJECT_DIR$/notification-service/pom.xml" />
         <option value="$PROJECT_DIR$/habito-service/pom.xml" />
-        <option value="$PROJECT_DIR$/Back-end/habito-service/pom.xml" />
       </list>
     </option>
   </component>

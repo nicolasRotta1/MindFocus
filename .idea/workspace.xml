@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0bbdf531-b8ef-4926-9d04-b1662a4bc686" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Back-end/.idea/copilot.data.migration.agent.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Back-end/.idea/copilot.data.migration.ask.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Back-end/.idea/copilot.data.migration.ask2agent.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Back-end/.idea/copilot.data.migration.edit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/enums/FrequenciaHabito.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/Specification/HabitoSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/Specification/HabitoSpecification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/controllers/HabitoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/controllers/HabitoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/models/Habito.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/models/Habito.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/models/Usuario.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/models/Usuario.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/repositories/HabitoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/repositories/HabitoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/repositories/UsuarioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/repositories/UsuarioRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/services/HabitoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/services/HabitoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/services/UsuarioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/habito-service/src/main/java/com/example/habito_service/services/UsuarioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/notification-service/src/main/java/com/example/notification_service/Controller/HealthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-end/notification-service/src/main/java/com/example/notification_service/dtos/HabitoRequest.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/Back-end" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Lksmv"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/nicolasRotta1/MindFocus.git",
+    "accountId": "b53e8791-6328-44ab-9cb7-26e752696a63"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="35cbvh6AeZOHnkYfxMo6Xh9f24t" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/moc/Documents/GitHub/MindFocus",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="Spring Boot.HabitoServiceApplication">
+    <configuration name="HabitoServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="habito-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.habito_service.HabitoServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NotificationServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="notification-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.notification_service.NotificationServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0bbdf531-b8ef-4926-9d04-b1662a4bc686" name="Changes" comment="" />
+      <created>1763412538680</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763412538680</updated>
+      <workItem from="1763412540215" duration="3731000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
