@@ -1,0 +1,12 @@
+.git/
+.gitignore
+.idea/
+*.iml
+node_modules/
+target/
+.DS_Store
+*.log
+README.md
+*.md
+!DOCKER_README.md
+

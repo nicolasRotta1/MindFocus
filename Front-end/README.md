@@ -1,73 +1,124 @@
-# React + TypeScript + Vite
+# 🎨 Front-end - MindFocus
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface React do projeto MindFocus para gerenciamento de hábitos.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Tecnologias
 
-## React Compiler
+- **React 19** - Biblioteca JavaScript para interfaces
+- **TypeScript** - Tipagem estática
+- **Vite** - Build tool e dev server
+- **Nginx** - Servidor web para produção (Docker)
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+---
 
-## Expanding the ESLint configuration
+## 📁 Estrutura
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+Front-end/
+├── src/
+│   ├── App.tsx          # Componente principal
+│   ├── App.css          # Estilos do App
+│   ├── main.tsx         # Entry point
+│   └── index.css        # Estilos globais
+├── public/              # Arquivos estáticos
+├── nginx.conf          # Configuração Nginx para SPA
+├── Dockerfile          # Containerização
+└── package.json        # Dependências
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Como Executar
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Desenvolvimento Local
+
+```bash
+# Instalar dependências
+npm install
+
+# Executar em modo desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+
+# Preview do build
+npm run preview
 ```
+
+### Docker
+
+```bash
+cd infra
+docker-compose up -d frontend
+```
+
+Acesse: http://localhost:3000
+
+---
+
+## 🔧 Configuração
+
+### Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do Front-end:
+
+```env
+VITE_API_URL=http://localhost:8080
+```
+
+### Nginx (Produção)
+
+O `nginx.conf` está configurado para:
+- ✅ SPA routing (todas as rotas vão para `index.html`)
+- ✅ Cache de assets estáticos
+- ✅ Gzip compression
+- ✅ Headers de segurança
+
+---
+
+## 📦 Scripts Disponíveis
+
+- `npm run dev` - Inicia servidor de desenvolvimento
+- `npm run build` - Cria build de produção
+- `npm run preview` - Preview do build
+- `npm run lint` - Executa ESLint
+
+---
+
+## 🌐 Integração com Back-end
+
+O front-end consome a API do `habito-service` na porta **8080**.
+
+### Endpoints Principais
+
+- `POST /auth/register` - Registrar usuário
+- `POST /auth/login` - Login
+- `GET /api/habitos` - Listar hábitos
+- `POST /api/habitos` - Criar hábito
+- `PUT /api/habitos/{id}` - Atualizar hábito
+- `DELETE /api/habitos/{id}` - Deletar hábito
+
+---
+
+## 🐳 Docker
+
+O front-end é containerizado usando:
+- **Multi-stage build** (Node.js para build + Nginx para servir)
+- **Nginx Alpine** (imagem leve)
+- **Health check** configurado
+
+---
+
+## 📝 Notas
+
+- Interface responsiva
+- SPA (Single Page Application)
+- Configurado para produção com Nginx
+- Health check endpoint: `/health`
+
+---
+
+**Desenvolvido para o projeto MindFocus** 🚀

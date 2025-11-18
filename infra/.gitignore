@@ -1,0 +1,10 @@
+# Arquivo .env não deve ser commitado
+.env
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+

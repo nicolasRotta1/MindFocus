@@ -1,0 +1,17 @@
+target/
+.mvn/wrapper/maven-wrapper.jar
+.idea/
+*.iml
+*.log
+.git/
+.gitignore
+README.md
+.DS_Store
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
