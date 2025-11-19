@@ -1,5 +1,11 @@
 package com.example.habito_service.services;
 
+
+
+import com.example.habito_service.Exception.GlobalExceptionHandler;
+import com.example.habito_service.Exception.InvalidCredentialsException;
+import com.example.habito_service.Exception.TokenNotFoundException;
+import com.example.habito_service.Exception.UserAlreadyExistsException;
 import com.example.habito_service.dto.LoginRequest;
 import com.example.habito_service.dto.RegisterRequest;
 import com.example.habito_service.models.Usuario;
@@ -35,11 +41,10 @@ public class AuthService {
     // ===============================
     // Registro
     // ===============================
-
     @Transactional
     public String register(RegisterRequest dto) {
         if (userExists(dto)) {
-            throw new RuntimeException("Usuário já cadastrado!");
+            throw new UserAlreadyExistsException("Usuário já cadastrado!");
         }
 
         Usuario usuario = new Usuario();
@@ -71,9 +76,8 @@ public class AuthService {
             usuarioOptional = usuarioRepository.findByTelefone(identificador);
         }
 
-
         if (usuarioOptional.isEmpty() || !passwordEncoder.matches(loginRequest.senha(), usuarioOptional.get().getSenha())) {
-            throw new RuntimeException("Credenciais inválidas!");
+            throw new InvalidCredentialsException("Credenciais inválidas!");
         }
 
         return tokenService.generateToken(usuarioOptional.get());
@@ -88,7 +92,7 @@ public class AuthService {
             tokenBlacklistService.add(token);
             return "Logout realizado com sucesso!";
         } else {
-            throw new RuntimeException("Token não encontrado ou inválido!");
+            throw new TokenNotFoundException("Token não encontrado ou inválido!");
         }
     }
 }

@@ -64,12 +64,12 @@ public class SecurityFilter extends OncePerRequestFilter {
                         Usuario usuario = usuarioOpt.get();
 
                         var authentication = new UsernamePasswordAuthenticationToken(
-                                usuario, // usuário completo como principal
+                                usuario.getId(),
                                 null,
                                 usuario.getAuthorities()
                         );
-
                         SecurityContextHolder.getContext().setAuthentication(authentication);
+
                     }
 
                 } catch (IllegalArgumentException e) {
