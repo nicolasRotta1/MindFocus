@@ -2,7 +2,6 @@ package com.example.habito_service.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,23 +17,20 @@ public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @NotBlank(message = "O nome não pode estar em branco")
     @Column(nullable = false)
     private String nome;
 
-    @NotBlank(message = "O e-mail não pode estar em branco")
     @Email(message = "E-mail inválido")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String email;
 
-    @NotBlank(message = "O telefone não pode estar em branco")
     @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String telefone;
 
-    @NotBlank(message = "A senha não pode estar em branco")
     @Column(nullable = false)
     private String senha;
 
@@ -42,6 +38,7 @@ public class Usuario implements UserDetails {
     private List<Habito> habitos = new ArrayList<>();
 
     // Construtores
+
     public Usuario() {}
 
     public Usuario(String nome, String email, String telefone, String senha) {
@@ -51,9 +48,15 @@ public class Usuario implements UserDetails {
         this.senha = senha;
     }
 
+
     // Getters e Setters
+
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -80,11 +83,25 @@ public class Usuario implements UserDetails {
         this.telefone = telefone;
     }
 
+    public String getSenha() {
+        return senha;
+    }
+
     public void setSenha(String senha) {
         this.senha = senha;
     }
 
+    public List<Habito> getHabitos() {
+        return habitos;
+    }
+
+    public void setHabitos(List<Habito> habitos) {
+        this.habitos = habitos;
+    }
+
+    // ===============================
     // Métodos do UserDetails
+    // ===============================
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null; // Roles podem ser adicionadas depois
@@ -92,12 +109,12 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email; // Spring Security continua usando email como username
+        return email != null ? email : telefone;
     }
 
     @Override
     public String getPassword() {
-        return senha; // senha real usada na autenticação
+        return senha;
     }
 
     @Override

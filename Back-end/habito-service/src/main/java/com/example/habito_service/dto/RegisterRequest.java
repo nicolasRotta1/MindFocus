@@ -10,11 +10,9 @@ public class RegisterRequest {
     @NotBlank(message = "O nome é obrigatório.")
     private String nome;
 
-    @NotBlank(message = "O e-mail é obrigatório.")
     @Email(message = "E-mail inválido.")
     private String email;
 
-    @NotBlank(message = "O telefone é obrigatório.")
     @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido.")
     private String telefone;
 
@@ -22,6 +20,12 @@ public class RegisterRequest {
     @Size(min = 8, message = "A senha deve conter pelo menos 8 caracteres.")
     private String senha;
 
+
+
+    public boolean isValid() {
+        return (this.email != null && !this.email.isEmpty())
+                || (this.telefone != null && !this.telefone.isEmpty());
+    }
 
     // Getters e Setters
 

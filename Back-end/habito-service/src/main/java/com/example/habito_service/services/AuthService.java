@@ -6,6 +6,7 @@ import com.example.habito_service.models.Usuario;
 import com.example.habito_service.repositories.UsuarioRepository;
 import com.example.habito_service.security.TokenBlacklistService;
 import com.example.habito_service.security.TokenService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,8 @@ public class AuthService {
     // ===============================
     // Registro
     // ===============================
+
+    @Transactional
     public String register(RegisterRequest dto) {
         if (userExists(dto)) {
             throw new RuntimeException("Usuário já cadastrado!");
@@ -50,16 +53,17 @@ public class AuthService {
     }
 
     private boolean userExists(RegisterRequest dto) {
-        return usuarioRepository.findByEmail(dto.getEmail()).isPresent()
-                || usuarioRepository.findByTelefone(dto.getTelefone()).isPresent();
+        boolean emailExists = dto.getEmail() != null && usuarioRepository.findByEmail(dto.getEmail()).isPresent();
+        boolean telefoneExists = dto.getTelefone() != null && usuarioRepository.findByTelefone(dto.getTelefone()).isPresent();
+        return emailExists || telefoneExists;
     }
 
     // ===============================
     // Login
     // ===============================
     public String login(LoginRequest loginRequest) {
-        String identificador = loginRequest.identificador();
         Optional<Usuario> usuarioOptional;
+        String identificador = loginRequest.identificador();
 
         if (identificador.contains("@")) {
             usuarioOptional = usuarioRepository.findByEmail(identificador);
@@ -67,7 +71,8 @@ public class AuthService {
             usuarioOptional = usuarioRepository.findByTelefone(identificador);
         }
 
-        if (usuarioOptional.isEmpty() || !passwordEncoder.matches(loginRequest.senha(), usuarioOptional.get().getPassword())) {
+
+        if (usuarioOptional.isEmpty() || !passwordEncoder.matches(loginRequest.senha(), usuarioOptional.get().getSenha())) {
             throw new RuntimeException("Credenciais inválidas!");
         }
 

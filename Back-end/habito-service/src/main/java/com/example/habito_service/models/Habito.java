@@ -15,7 +15,8 @@ import java.util.UUID;
 public class Habito {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @NotBlank(message = "O nome do hábito não pode estar em branco")
@@ -46,6 +47,8 @@ public class Habito {
     @JsonIgnore // Evita loop infinito no Json
     private Usuario usuario;
 
+    // Construtores
+
     public Habito() {}
 
     public Habito(String nome, Boolean concluido, TipoHabito tipo, StatusHabito status, FrequenciaHabito frequencia, Usuario usuario) {
@@ -57,7 +60,7 @@ public class Habito {
         this.usuario = usuario;
     }
 
-// Getters e Setters
+    // Getters e Setters
 
     public UUID getId() {
         return id;
@@ -102,6 +105,8 @@ public class Habito {
     public void setFrequencia(FrequenciaHabito frequencia) {
         this.frequencia = frequencia;
     }
+
+    //toString
 
     @Override
     public String toString() {

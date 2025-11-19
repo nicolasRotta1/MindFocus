@@ -25,6 +25,9 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest dto) {
         try {
+            if (!dto.isValid()) {
+                return ResponseEntity.badRequest().body("Preencha email ou telefone para registrar!");
+            }
             String mensagem = authService.register(dto);
             return ResponseEntity.ok(mensagem);
         } catch (RuntimeException e) {
