@@ -9,12 +9,13 @@ import java.time.LocalDateTime;
 public class HabitoRequest {
 
     private String nome;
-    private TipoHabito tipo;
-    private StatusHabito status;
-    private FrequenciaHabito frequencia;
-    private Boolean concluido;
-    private LocalDateTime dataInicio; // para filtro de datas
-    private LocalDateTime dataFim;    // para filtro de datas
+    private TipoHabito tipo = TipoHabito.SIM_NAO; // padrão
+    private StatusHabito status = StatusHabito.PENDENTE; // padrão
+    private FrequenciaHabito frequencia = FrequenciaHabito.DIARIO; // padrão
+    private Boolean concluido = false; // padrão
+    private Integer progresso = 0; // 0-100%
+    private LocalDateTime dataInicio; // filtro de datas
+    private LocalDateTime dataFim;    // filtro de datas
 
     // Getters e Setters
 
@@ -56,6 +57,14 @@ public class HabitoRequest {
 
     public void setConcluido(Boolean concluido) {
         this.concluido = concluido;
+    }
+
+    public Integer getProgresso() {
+        return progresso;
+    }
+
+    public void setProgresso(Integer progresso) {
+        this.progresso = progresso;
     }
 
     public LocalDateTime getDataInicio() {
