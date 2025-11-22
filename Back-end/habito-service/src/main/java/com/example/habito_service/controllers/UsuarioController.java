@@ -1,6 +1,7 @@
 package com.example.habito_service.controllers;
 
 import com.example.habito_service.dto.UsuarioAtualizacaoDTO;
+import com.example.habito_service.dto.UsuarioResponse;
 import com.example.habito_service.models.Usuario;
 import com.example.habito_service.services.UsuarioService;
 import jakarta.validation.Valid;
@@ -24,28 +25,30 @@ public class UsuarioController {
     // Retorna dados do usuário autenticado
     // ================================
     @GetMapping("/atual")
-    public ResponseEntity<Usuario> getUsuarioLogado() {
-        Usuario usuario = usuarioService.buscarUsuarioLogado();
-        return ResponseEntity.ok(usuario);
+    public ResponseEntity<UsuarioResponse> getUsuarioLogado() {
+        Usuario usuario = usuarioService.buscarUsuarioLogado(); // agora busca a Entity
+        UsuarioResponse response = UsuarioResponse.fromEntity(usuario); // converte para DTO
+        return ResponseEntity.ok(response);
     }
 
     // ================================
     // Buscar qualquer usuário por ID (somente ADMIN)
     // ================================
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable UUID id) {
-        Usuario usuario = usuarioService.buscarPorId(id);
-        return ResponseEntity.ok(usuario);
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable UUID id) {
+        Usuario usuario = usuarioService.buscarPorId(id); // recebe a entity
+        UsuarioResponse response = UsuarioResponse.fromEntity(usuario); // converte
+        return ResponseEntity.ok(response);
     }
+
 
     // ================================
     // Atualizar dados do usuário logado
     // ================================
     @PutMapping("/atual")
     public ResponseEntity<String> atualizarUsuario(@Valid @RequestBody UsuarioAtualizacaoDTO dto) {
-        Usuario usuarioBase = usuarioService.buscarUsuarioLogado();
+        Usuario usuarioBase = usuarioService.buscarUsuarioLogado(); // usar Entity aqui
 
-        // Atualização manual e segura (apenas campos permitidos)
         if (dto.getNome() != null && !dto.getNome().isBlank()) {
             usuarioBase.setNome(dto.getNome());
         }

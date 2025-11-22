@@ -1,12 +1,19 @@
 package com.example.habito_service.controllers;
 
+import com.example.habito_service.dto.HabitoRequest;
+import com.example.habito_service.dto.HabitoResponse;
+import com.example.habito_service.enums.FrequenciaHabito;
+import com.example.habito_service.enums.StatusHabito;
+import com.example.habito_service.enums.TipoHabito;
 import com.example.habito_service.models.Habito;
 import com.example.habito_service.services.HabitoService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,20 +28,42 @@ public class HabitoController {
     }
 
     // ============================
-    // Listar todos os hábitos do usuário logado
+    // Listar todos os hábitos do usuário logado (com filtros opcionais)
     // ============================
     @GetMapping
-    public ResponseEntity<List<Habito>> listarHabitos() {
-        List<Habito> habitos = habitoService.listarHabitosDoUsuario();
+    public ResponseEntity<List<HabitoResponse>> listarHabitos(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) TipoHabito tipo,
+            @RequestParam(required = false) StatusHabito status,
+            @RequestParam(required = false) FrequenciaHabito frequencia,
+            @RequestParam(required = false) Boolean concluido,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime criadoEmInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime criadoEmFim,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime atualizadoEmInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime atualizadoEmFim
+    ) {
+        List<HabitoResponse> habitos = habitoService.listarHabitosDoUsuario(
+                nome,
+                tipo,
+                status,
+                frequencia,
+                concluido,
+                criadoEmInicio,
+                criadoEmFim,
+                atualizadoEmInicio,
+                atualizadoEmFim
+        );
+
         return ResponseEntity.ok(habitos);
     }
+
 
     // ============================
     // Criar hábito
     // ============================
     @PostMapping
-    public ResponseEntity<Habito> criarHabito(@Valid @RequestBody Habito habito) {
-        Habito habitoCriado = habitoService.criarHabito(habito);
+    public ResponseEntity<HabitoResponse> criarHabito(@Valid @RequestBody HabitoRequest dto) {
+        HabitoResponse habitoCriado = habitoService.criarHabito(dto);
         return new ResponseEntity<>(habitoCriado, HttpStatus.CREATED);
     }
 
@@ -42,20 +71,21 @@ public class HabitoController {
     // Buscar hábito por ID
     // ============================
     @GetMapping("/{id}")
-    public ResponseEntity<Habito> buscarPorId(@PathVariable UUID id) {
+    public ResponseEntity<HabitoResponse> buscarPorId(@PathVariable UUID id) {
         Habito habito = habitoService.buscarPorId(id);
-        return ResponseEntity.ok(habito);
+        return ResponseEntity.ok(HabitoResponse.fromEntity(habito));
     }
+
 
     // ============================
     // Atualizar hábito
     // ============================
     @PutMapping("/{id}")
-    public ResponseEntity<Habito> atualizarHabito(
+    public ResponseEntity<HabitoResponse> atualizarHabito(
             @PathVariable UUID id,
-            @Valid @RequestBody Habito habitoAtualizado
+            @Valid @RequestBody HabitoRequest dtoAtualizado
     ) {
-        Habito habito = habitoService.atualizarHabito(id, habitoAtualizado);
+        HabitoResponse habito = habitoService.atualizarHabito(id, dtoAtualizado);
         return ResponseEntity.ok(habito);
     }
 
@@ -72,8 +102,8 @@ public class HabitoController {
     // Marcar hábito como concluído
     // ============================
     @PostMapping("/{id}/concluir")
-    public ResponseEntity<Habito> concluirHabito(@PathVariable UUID id) {
-        Habito habito = habitoService.concluirHabito(id);
+    public ResponseEntity<HabitoResponse> concluirHabito(@PathVariable UUID id) {
+        HabitoResponse habito = habitoService.concluirHabito(id);
         return ResponseEntity.ok(habito);
     }
 }

@@ -64,7 +64,7 @@ public class UsuarioService {
     }
 
     // ================================
-    // Buscar usuário por ID informado
+    // Buscar usuário por ID informado (somente para admins)
     // ================================
     public Usuario buscarPorId(UUID id) {
         return usuarioRepository.findById(id)

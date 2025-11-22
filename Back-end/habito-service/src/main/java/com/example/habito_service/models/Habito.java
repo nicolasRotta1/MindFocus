@@ -150,6 +150,14 @@ public class Habito {
         this.progresso = progresso;
     }
 
+    public void setCriadoEm(LocalDateTime criadoEm) {
+        this.criadoEm = criadoEm;
+    }
+
+    public void setAtualizadoEm(LocalDateTime atualizadoEm) {
+        this.atualizadoEm = atualizadoEm;
+    }
+
     @Override
     public String toString() {
         return "Habito{" +

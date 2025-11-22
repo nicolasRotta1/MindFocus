@@ -1,14 +1,22 @@
 package com.example.habito_service.services;
 
+import com.example.habito_service.dto.HabitoRequest;
+import com.example.habito_service.dto.HabitoResponse;
+import com.example.habito_service.enums.FrequenciaHabito;
 import com.example.habito_service.enums.StatusHabito;
+import com.example.habito_service.enums.TipoHabito;
 import com.example.habito_service.models.Habito;
 import com.example.habito_service.models.Usuario;
 import com.example.habito_service.repositories.HabitoRepository;
+import com.example.habito_service.specification.HabitoSpecification;
 import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class HabitoService {
@@ -24,54 +32,96 @@ public class HabitoService {
     // ============================
     // Criar hábito
     // ============================
-    public Habito criarHabito(Habito habito) {
+    public HabitoResponse criarHabito(HabitoRequest dto) {
         Usuario usuario = usuarioService.buscarUsuarioLogado();
-        habito.setUsuario(usuario);
-        return habitoRepository.save(habito);
+        Habito habito = dto.toEntity(usuario);
+
+        habito.setCriadoEm(LocalDateTime.now());
+        habito.setAtualizadoEm(LocalDateTime.now());
+
+        Habito salvo = habitoRepository.save(habito);
+        return HabitoResponse.fromEntity(salvo);
     }
 
-    // ============================
-    // Listar hábitos do usuário logado
-    // ============================
-    public List<Habito> listarHabitosDoUsuario() {
-        Usuario usuario = usuarioService.buscarUsuarioLogado();
-        return habitoRepository.findByUsuarioId(usuario.getId());
+    public List<HabitoResponse> listarHabitosDoUsuario(
+            String nome,
+            TipoHabito tipo,
+            StatusHabito status,
+            FrequenciaHabito frequencia,
+            Boolean concluido,
+            LocalDateTime criadoEmInicio,
+            LocalDateTime criadoEmFim,
+            LocalDateTime atualizadoEmInicio,
+            LocalDateTime atualizadoEmFim
+    ) {
+        UUID usuarioId = usuarioService.buscarUsuarioLogado().getId();
+
+        Specification<Habito> spec = HabitoSpecification.comFiltros(
+                nome,
+                tipo,
+                status,
+                frequencia,
+                concluido,
+                criadoEmInicio,
+                criadoEmFim,
+                atualizadoEmInicio,
+                atualizadoEmFim,
+                usuarioId
+        );
+
+        return habitoRepository.findAll(spec)
+                .stream()
+                .map(HabitoResponse::fromEntity)
+                .collect(Collectors.toList());
     }
+
+
 
     // ============================
     // Buscar hábito por ID (verifica propriedade)
     // ============================
     public Habito buscarPorId(UUID id) {
         Usuario usuario = usuarioService.buscarUsuarioLogado();
-        return habitoRepository.findByIdAndUsuarioId(id, usuario.getId())
+
+        Habito habito = habitoRepository.findByIdAndUsuarioId(id, usuario.getId())
                 .orElseThrow(() -> new HabitoNotFoundException("Hábito não encontrado para este usuário"));
+
+        return habito;
     }
 
     // ============================
-    // Atualizar hábito (atualização parcial)
+    // Atualizar hábito (parcial / PATCH)
     // ============================
     @Transactional
-    public Habito atualizarHabito(UUID id, Habito habitoAtualizado) {
+    public HabitoResponse atualizarHabito(UUID id, HabitoRequest dto) {
         Habito habitoExistente = buscarPorId(id);
 
-        if (habitoAtualizado.getNome() != null && !habitoAtualizado.getNome().isBlank()) {
-            habitoExistente.setNome(habitoAtualizado.getNome());
+        if (dto.getNome() != null && !dto.getNome().isBlank()) {
+            habitoExistente.setNome(dto.getNome());
         }
-        if (habitoAtualizado.getTipo() != null) {
-            habitoExistente.setTipo(habitoAtualizado.getTipo());
+        if (dto.getTipo() != null) {
+            habitoExistente.setTipo(dto.getTipo());
         }
-        if (habitoAtualizado.getStatus() != null) {
-            habitoExistente.setStatus(habitoAtualizado.getStatus());
+        if (dto.getStatus() != null) {
+            habitoExistente.setStatus(dto.getStatus());
         }
-        if (habitoAtualizado.getFrequencia() != null) {
-            habitoExistente.setFrequencia(habitoAtualizado.getFrequencia());
+        if (dto.getFrequencia() != null) {
+            habitoExistente.setFrequencia(dto.getFrequencia());
         }
-        // Só atualiza concluído se explicitamente definido
-        if (habitoAtualizado.getConcluido() != null) {
-            habitoExistente.setConcluido(habitoAtualizado.getConcluido());
+        if (dto.getConcluido() != null) {
+            habitoExistente.setConcluido(dto.getConcluido());
+            if (dto.getConcluido()) {
+                habitoExistente.setStatus(StatusHabito.CONCLUIDO);
+                habitoExistente.setProgresso(100);
+            }
+        }
+        if (dto.getProgresso() != null) {
+            habitoExistente.setProgresso(dto.getProgresso());
         }
 
-        return habitoExistente;
+        habitoExistente.setAtualizadoEm(LocalDateTime.now());
+
+        return HabitoResponse.fromEntity(habitoExistente);
     }
 
     // ============================
@@ -86,11 +136,14 @@ public class HabitoService {
     // Marcar hábito como concluído
     // ============================
     @Transactional
-    public Habito concluirHabito(UUID id) {
+    public HabitoResponse concluirHabito(UUID id) {
         Habito habito = buscarPorId(id);
         habito.setConcluido(true);
         habito.setStatus(StatusHabito.CONCLUIDO);
-        return habito;
+        habito.setProgresso(100);
+        habito.setAtualizadoEm(LocalDateTime.now());
+
+        return HabitoResponse.fromEntity(habito);
     }
 
     // ============================
