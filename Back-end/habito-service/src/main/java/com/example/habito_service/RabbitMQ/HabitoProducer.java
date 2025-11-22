@@ -1,73 +1,74 @@
 package com.example.habito_service.RabbitMQ;
 
-import com.example.habito_service.models.Habito;
+import com.example.habito_service.dto.HabitoEvent;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
  * HabitoProducer é responsável por enviar eventos de hábitos
- * para o RabbitMQ. Esses eventos podem ser consumidos por outros
- * microserviços, como notification-service, audit-service ou schedule-service.
+ * para o RabbitMQ.
  */
 @Component
 public class HabitoProducer {
 
     private final RabbitTemplate rabbitTemplate;
 
-    // Exchange do RabbitMQ configurada no application.properties
-    @Value("${mindfocus.rabbitmq.exchange}")
+    // Exchange do RabbitMQ (Adicionado fallback)
+    @Value("${mindfocus.rabbitmq.exchange:mindfocus.event.exchange}")
     private String exchange;
 
-    // Routing key para eventos de hábito
-    @Value("${mindfocus.rabbitmq.routing-keys.habito}")
+    // Routing Keys (Adicionado fallback em todas)
+    @Value("${mindfocus.rabbitmq.routing-keys.habito:habito.internal}")
     private String habitoRoutingKey;
 
-    // Routing key para eventos de notificação
-    @Value("${mindfocus.rabbitmq.routing-keys.notification}")
+    // CHAVE CORRETA PARA NOTIFICAÇÃO (DEVE SER 'habito.criado')
+    @Value("${mindfocus.rabbitmq.routing-keys.notification:habito.criado}")
     private String notificationRoutingKey;
 
-    // Routing key para eventos de auditoria
-    @Value("${mindfocus.rabbitmq.routing-keys.audit}")
+    @Value("${mindfocus.rabbitmq.routing-keys.audit:audit.log}")
     private String auditRoutingKey;
 
-    // Routing key para eventos de agendamento
-    @Value("${mindfocus.rabbitmq.routing-keys.schedule}")
+    @Value("${mindfocus.rabbitmq.routing-keys.schedule:schedule.check}")
     private String scheduleRoutingKey;
 
+    /**
+     * Construtor com injeção do RabbitTemplate.
+     * Força o uso do conversor JSON para esta instância específica.
+     */
     public HabitoProducer(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
+        // Garante que esta instância use o conversor JSON
+        this.rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
     }
 
     /**
-     * Envia evento de hábito criado
+     * MÉTODO CORRIGIDO:
+     * O evento de criação de hábito, se destina à notificação, deve usar
+     * a chave de roteamento de notificação.
      */
-    public void enviarHabitoCriado(Habito habito) {
-        rabbitTemplate.convertAndSend(exchange, habitoRoutingKey, habito);
-        System.out.println("Evento de hábito criado enviado: " + habito);
+    public void enviarHabitoCriado(HabitoEvent habitoEvent) {
+        try {
+            // CORREÇÃO: Usando a notificationRoutingKey que é ligada à fila do notification-service
+            rabbitTemplate.convertAndSend(exchange, notificationRoutingKey, habitoEvent);
+            System.out.println("Evento de hábito criado enviado com sucesso: " + habitoEvent +
+                    " usando a chave de roteamento: " + notificationRoutingKey);
+        } catch (Exception e) {
+            System.err.println("ERRO ao enviar mensagem para RabbitMQ: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Envia evento de notificação (ex: para o notification-service)
-     */
-    public void enviarNotificacao(Habito habito) {
-        rabbitTemplate.convertAndSend(exchange, notificationRoutingKey, habito);
-        System.out.println("Evento de notificação enviado: " + habito);
+    public void enviarNotificacao(HabitoEvent habitoEvent) {
+        rabbitTemplate.convertAndSend(exchange, notificationRoutingKey, habitoEvent);
     }
 
-    /**
-     * Envia evento de auditoria (ex: logs ou analytics)
-     */
-    public void enviarAuditEvent(Habito habito) {
-        rabbitTemplate.convertAndSend(exchange, auditRoutingKey, habito);
-        System.out.println("Evento de auditoria enviado: " + habito);
+    public void enviarAuditEvent(HabitoEvent habitoEvent) {
+        rabbitTemplate.convertAndSend(exchange, auditRoutingKey, habitoEvent);
     }
 
-    /**
-     * Envia evento de agendamento (ex: lembretes)
-     */
-    public void enviarScheduleEvent(Habito habito) {
-        rabbitTemplate.convertAndSend(exchange, scheduleRoutingKey, habito);
-        System.out.println("Evento de agendamento enviado: " + habito);
+    public void enviarScheduleEvent(HabitoEvent habitoEvent) {
+        rabbitTemplate.convertAndSend(exchange, scheduleRoutingKey, habitoEvent);
     }
 }
