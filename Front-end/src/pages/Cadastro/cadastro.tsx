@@ -1,336 +1,335 @@
 import { useState } from 'react';
-import { Mail, Phone, Lock, User, AlertCircle, CheckCircle, Loader2, CheckSquare } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Brain, Mail, Phone, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import './cadastro.css';
+import { useNavigate } from 'react-router-dom';
+import { registerUser, queryUser, setToken } from '../../lib/Auth';
+import type { IdentifierType } from '../../lib/Auth';
 
-type ModoCadastro = 'email' | 'phone';
+type AuthMethod = 'email' | 'phone';
 
 interface FormErrors {
   name?: string;
-  email?: string;
-  phone?: string;
+  contact?: string;
   password?: string;
-  terms?: string;
+  general?: string;
 }
 
-interface FormData {
-  name: string;
-  email: string;
-  phone: string;
-  password: string;
-  terms: boolean;
-}
+type CadastroProps = {
+  onBackClick?: () => void;
+};
 
-export function Cadastro() {
-  const [mode, setMode] = useState<ModoCadastro>('email');
-  const [formData, setFormData] = useState<FormData>({
+export default function Cadastro({ onBackClick }: CadastroProps) {
+  const [authMethod, setAuthMethod] = useState<AuthMethod>('email');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     password: '',
-    terms: false,
   });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Record<keyof FormData, boolean>>({
-    name: false,
-    email: false,
-    phone: false,
-    password: false,
-    terms: false,
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
 
-  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePhone = (phone: string) => {
-    const digits = phone.replace(/\D/g, '');
-    return digits.length >= 10 && digits.length <= 15;
+  const validateEmail = (email: string): boolean => {
+    return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
   };
-  const getPasswordStrength = (password: string) => {
-    if (password.length < 8) return 0;
-    let strength = 0;
-    if (password.match(/[a-z]/)) strength++;
-    if (password.match(/[A-Z]/)) strength++;
-    if (password.match(/[0-9]/)) strength++;
-    if (password.match(/[^a-zA-Z0-9]/)) strength++;
-    return strength;
+
+  const validatePhone = (phone: string): boolean => {
+    return /^\+?\d{10,15}$/.test(phone);
   };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Nome é obrigatório';
-    if (mode === 'email') {
-      if (!formData.email.trim()) newErrors.email = 'E-mail é obrigatório';
-      else if (!validateEmail(formData.email)) newErrors.email = 'E-mail inválido';
-    } else {
-      if (!formData.phone.trim()) newErrors.phone = 'Telefone é obrigatório';
-      else if (!validatePhone(formData.phone)) newErrors.phone = 'Telefone inválido (10-15 dígitos)';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Nome é obrigatório';
     }
-    if (!formData.password.trim()) newErrors.password = 'Senha é obrigatória';
-    else if (formData.password.length < 8) newErrors.password = 'Senha deve ter no mínimo 8 caracteres';
-    if (!formData.terms) newErrors.terms = 'Você deve aceitar os termos';
+
+    if (formData.password.length < 8) {
+      newErrors.password = 'Senha deve ter no mínimo 8 caracteres';
+    }
+
+    if (authMethod === 'email') {
+      if (!formData.email.trim()) {
+        newErrors.contact = 'Email é obrigatório';
+      } else if (!validateEmail(formData.email)) {
+        newErrors.contact = 'Email inválido';
+      }
+    } else {
+      if (!formData.phone.trim()) {
+        newErrors.contact = 'Telefone é obrigatório';
+      } else if (!validatePhone(formData.phone)) {
+        newErrors.contact = 'Telefone inválido (formato: +55 ou 10-15 dígitos)';
+      }
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (field: keyof FormData, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (touched[field]) validateField(field, value);
-  };
-
-  const validateField = (field: keyof FormData, value: string | boolean) => {
-    const newErrors = { ...errors };
-    switch (field) {
-      case 'name':
-        if (!String(value).trim()) newErrors.name = 'Nome é obrigatório';
-        else delete newErrors.name;
-        break;
-      case 'email':
-        if (!String(value).trim()) newErrors.email = 'E-mail é obrigatório';
-        else if (!validateEmail(String(value))) newErrors.email = 'E-mail inválido';
-        else delete newErrors.email;
-        break;
-      case 'phone':
-        if (!String(value).trim()) newErrors.phone = 'Telefone é obrigatório';
-        else if (!validatePhone(String(value))) newErrors.phone = 'Telefone inválido (10-15 dígitos)';
-        else delete newErrors.phone;
-        break;
-      case 'password':
-        if (!String(value).trim()) newErrors.password = 'Senha é obrigatória';
-        else if (String(value).length < 8) newErrors.password = 'Senha deve ter no mínimo 8 caracteres';
-        else delete newErrors.password;
-        break;
-      case 'terms':
-        if (!value) newErrors.terms = 'Você deve aceitar os termos';
-        else delete newErrors.terms;
-        break;
-    }
-    setErrors(newErrors);
-  };
-
-  const handleBlur = (field: keyof FormData) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
-    validateField(field, formData[field]);
-  };
-
-  const handleModeChange = (newMode: ModoCadastro) => {
-    setMode(newMode);
-    setErrors({});
-    setTouched({ name: false, email: false, phone: false, password: false, terms: false });
-    setSuccessMessage('');
-  };
-
-  const formatPhone = (value: string) => {
-    const digits = value.replace(/\D/g, '');
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhone(e.target.value);
-    handleChange('phone', formatted);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSuccessMessage('');
-    Object.keys(formData).forEach(key => setTouched(prev => ({ ...prev, [key]: true })));
-    if (!validateForm()) return;
-    setIsSubmitting(true);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+
     try {
-      await new Promise(r => setTimeout(r, 1500));
-      setSuccessMessage('Cadastro realizado com sucesso! Redirecionando...');
-      setFormData({ name: '', email: '', phone: '', password: '', terms: false });
-      setTouched({ name: false, email: false, phone: false, password: false, terms: false });
+      const payload = {
+        nome: formData.name,
+        email: authMethod === 'email' ? formData.email : '',
+        telefone: authMethod === 'phone' ? formData.phone : '',
+        senha: formData.password,
+      };
+
+      // Call backend register
+      await registerUser(payload);
+
+      // Try to log in automatically after register
+      const identifier = authMethod === 'email' ? formData.email : formData.phone;
+      const identifierType: IdentifierType = authMethod === 'email' ? 'email' : 'telefone';
+
+      const loginResult = await queryUser({ identifier, identifierType, senha: formData.password });
+
+      if (loginResult && loginResult.token) {
+        setToken(loginResult.token);
+        // navigate to dashboard
+        navigate('/dashboard');
+        return;
+      }
+
+      // If backend didn't return token on register, show success and navigate to login/back
+      setSuccess(true);
+      setFormData({ name: '', email: '', phone: '', password: '' });
+      setTimeout(() => {
+        setSuccess(false);
+        if (onBackClick) onBackClick();
+        else navigate('/login');
+      }, 2500);
+    } catch (err: any) {
+      console.error('Cadastro error', err);
+      const message = err?.message || 'Erro ao criar conta. Tente novamente.';
+      setErrors({ general: message });
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
-  const strength = getPasswordStrength(formData.password);
-  const strengthColor = ['#DC2626', '#F59E0B', '#10B981', '#10B981'][strength] || '#DC2626';
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if ((errors as any)[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: undefined,
+      }));
+    }
+    if (name === 'contact') {
+      setErrors((prev) => ({
+        ...prev,
+        contact: undefined,
+      }));
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="header">
-        <div className="container">
-          <div className="logo">
-            <Link to="/" aria-label="Ir para a página inicial">
-              <CheckSquare className="icon-large indigo" strokeWidth={2.5} aria-hidden="true" />
-              <h1>MindFocus</h1>
-            </Link>
-          </div>
-          <nav className="nav" aria-label="Navegação principal">
-            <Link to="/" className="nav-link" aria-label="Página Inicial">Início</Link>
-            <Link to="/about" className="nav-link" aria-label="Sobre Nós">Sobre</Link>
-            <button className="btn btn-login" aria-label="Fazer login">Login</button>
-            <button className="btn btn-signup" aria-label="Cadastrar-se">Cadastrar-se</button>
-          </nav>
-        </div>
-      </header>
-
-      <div className="signup-container">
-        <div className="signup-box">
-          <h2>Crie sua conta</h2>
-
-          <div className="mode-toggle">
-            <button
-              className={mode === 'email' ? 'active' : ''}
-              onClick={() => handleModeChange('email')}
-              aria-pressed={mode === 'email'}
-            >
-              <Mail className="icon-small" /> E-mail
-            </button>
-            <button
-              className={mode === 'phone' ? 'active' : ''}
-              onClick={() => handleModeChange('phone')}
-              aria-pressed={mode === 'phone'}
-            >
-              <Phone className="icon-small" /> Telefone
-            </button>
+    <div className="cadastro-bg">
+      <div className="cadastro-wrapper">
+        <div className="cadastro-card">
+          <div className="cadastro-header">
+            <div className="cadastro-logo-bg">
+              <Brain className="cadastro-logo-icon" size={32} />
+            </div>
+            <h1 className="cadastro-title">MindFocus</h1>
+            <h2 className="cadastro-subtitle">Criar conta</h2>
+            <p className="cadastro-text">Comece sua jornada de transformação</p>
           </div>
 
-          {successMessage && (
-            <div className="success-message" role="alert">
-              <CheckCircle aria-hidden="true" /> {successMessage}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="form-group">
-              <label htmlFor="name">Nome Completo</label>
-              <div className="input-container">
-                <User className="icon-input" aria-hidden="true" />
-                <input
-                  id="name"
-                  value={formData.name}
-                  onChange={e => handleChange('name', e.target.value)}
-                  onBlur={() => handleBlur('name')}
-                  placeholder="João Silva"
-                  aria-invalid={!!errors.name}
-                  aria-describedby={errors.name ? 'name-error' : undefined}
-                />
-                {touched.name && !errors.name && <CheckCircle className="icon-right success" aria-hidden="true" />}
-              </div>
-              {touched.name && errors.name && (
-                <div id="name-error" className="error-message" role="alert">
-                  <AlertCircle aria-hidden="true" /> {errors.name}
-                </div>
-              )}
-            </div>
-
-            {mode === 'email' ? (
-              <div className="form-group">
-                <label htmlFor="email">E-mail</label>
-                <div className="input-container">
-                  <Mail className="icon-input" aria-hidden="true" />
-                  <input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={e => handleChange('email', e.target.value)}
-                    onBlur={() => handleBlur('email')}
-                    placeholder="seu@email.com"
-                    aria-invalid={!!errors.email}
-                    aria-describedby={errors.email ? 'email-error' : undefined}
-                  />
-                  {touched.email && !errors.email && <CheckCircle className="icon-right success" aria-hidden="true" />}
-                </div>
-                {touched.email && errors.email && (
-                  <div id="email-error" className="error-message" role="alert">
-                    <AlertCircle aria-hidden="true" /> {errors.email}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="form-group">
-                <label htmlFor="phone">Telefone</label>
-                <div className="input-container">
-                  <Phone className="icon-input" aria-hidden="true" />
-                  <input
-                    id="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handlePhoneChange}
-                    onBlur={() => handleBlur('phone')}
-                    placeholder="(11) 99999-9999"
-                    maxLength={15}
-                    aria-invalid={!!errors.phone}
-                    aria-describedby={errors.phone ? 'phone-error' : undefined}
-                  />
-                  {touched.phone && !errors.phone && <CheckCircle className="icon-right success" aria-hidden="true" />}
-                </div>
-                {touched.phone && errors.phone && (
-                  <div id="phone-error" className="error-message" role="alert">
-                    <AlertCircle aria-hidden="true" /> {errors.phone}
-                  </div>
-                )}
+          <form onSubmit={handleSubmit} className="cadastro-form" noValidate>
+            {success && (
+              <div className="cadastro-success-box" role="status" aria-live="polite">
+                <CheckCircle className="cadastro-success-icon" size={20} />
+                <p className="cadastro-success-text">Conta criada com sucesso!</p>
               </div>
             )}
 
-            <div className="form-group">
-              <label htmlFor="password">Senha</label>
-              <div className="input-container">
-                <Lock className="icon-input" aria-hidden="true" />
+            {errors.general && (
+              <div className="cadastro-error-box" role="alert">
+                <AlertCircle className="cadastro-error-icon" size={20} />
+                <p className="cadastro-error-text">{errors.general}</p>
+              </div>
+            )}
+
+            <div className="cadastro-input-group">
+              <label htmlFor="name" className="cadastro-label">
+                Nome completo
+              </label>
+              <div className="cadastro-input-wrapper">
+                <input
+                  id="name"
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="João Silva"
+                  className={`cadastro-input ${errors.name ? 'cadastro-input-error' : ''}`}
+                  autoComplete="name"
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? 'name-error' : undefined}
+                  required
+                />
+              </div>
+              {errors.name && <p id="name-error" className="cadastro-input-error-text">{errors.name}</p>}
+            </div>
+
+            <div className="cadastro-input-group">
+              <label className="cadastro-label">Registrar com</label>
+              <div className="cadastro-switch-wrapper" role="tablist" aria-label="Método de autenticação">
+                <button
+                  type="button"
+                  onClick={() => setAuthMethod('email')}
+                  className={`cadastro-switch-btn ${authMethod === 'email' ? 'active' : ''}`}
+                  role="tab"
+                  aria-selected={authMethod === 'email'}
+                  aria-controls="email-panel"
+                >
+                  Email
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAuthMethod('phone')}
+                  className={`cadastro-switch-btn ${authMethod === 'phone' ? 'active' : ''}`}
+                  role="tab"
+                  aria-selected={authMethod === 'phone'}
+                  aria-controls="phone-panel"
+                >
+                  Telefone
+                </button>
+              </div>
+            </div>
+
+            {authMethod === 'email' && (
+              <div id="email-panel" role="tabpanel" className="cadastro-input-group">
+                <label htmlFor="email" className="cadastro-label">
+                  Email
+                </label>
+                <div className="cadastro-input-wrapper">
+                  <div className="cadastro-input-icon">
+                    <Mail size={20} />
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="seu@email.com"
+                    className={`cadastro-input ${errors.contact ? 'cadastro-input-error' : ''}`}
+                    autoComplete="email"
+                    aria-invalid={!!errors.contact}
+                    aria-describedby={errors.contact ? 'contact-error' : undefined}
+                    required
+                  />
+                </div>
+                {errors.contact && <p id="contact-error" className="cadastro-input-error-text">{errors.contact}</p>}
+              </div>
+            )}
+
+            {authMethod === 'phone' && (
+              <div id="phone-panel" role="tabpanel" className="cadastro-input-group">
+                <label htmlFor="phone" className="cadastro-label">
+                  Telefone
+                </label>
+                <div className="cadastro-input-wrapper">
+                  <div className="cadastro-input-icon">
+                    <Phone size={20} />
+                  </div>
+                  <input
+                    id="phone"
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="+55 11 99999-9999"
+                    className={`cadastro-input ${errors.contact ? 'cadastro-input-error' : ''}`}
+                    autoComplete="tel"
+                    inputMode="tel"
+                    aria-invalid={!!errors.contact}
+                    aria-describedby={errors.contact ? 'contact-error' : undefined}
+                    required
+                  />
+                </div>
+                {errors.contact && <p id="contact-error" className="cadastro-input-error-text">{errors.contact}</p>}
+              </div>
+            )}
+
+            <div className="cadastro-input-group">
+              <label htmlFor="password" className="cadastro-label">
+                Senha
+              </label>
+              <div className="cadastro-input-wrapper">
+                <div className="cadastro-input-icon">
+                  <Lock size={20} />
+                </div>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
                   value={formData.password}
-                  onChange={e => handleChange('password', e.target.value)}
-                  onBlur={() => handleBlur('password')}
+                  onChange={handleInputChange}
                   placeholder="Mínimo 8 caracteres"
+                  className={`cadastro-input ${errors.password ? 'cadastro-input-error' : ''}`}
+                  autoComplete="new-password"
                   aria-invalid={!!errors.password}
                   aria-describedby={errors.password ? 'password-error' : undefined}
+                  required
                 />
-                {touched.password && !errors.password && <CheckCircle className="icon-right success" aria-hidden="true" />}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="cadastro-input-eye"
+                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
-              {touched.password && formData.password && (
-                <div className="password-strength">
-                  <div className="strength-bar" style={{ width: `${(strength / 4) * 100}%`, backgroundColor: strengthColor }} />
-                </div>
-              )}
-              {touched.password && errors.password && (
-                <div id="password-error" className="error-message" role="alert">
-                  <AlertCircle aria-hidden="true" /> {errors.password}
-                </div>
-              )}
+              {errors.password && <p id="password-error" className="cadastro-input-error-text">{errors.password}</p>}
             </div>
 
-            <div className="form-group terms">
-              <input
-                id="terms"
-                type="checkbox"
-                checked={formData.terms}
-                onChange={e => handleChange('terms', e.target.checked)}
-                onBlur={() => handleBlur('terms')}
-                aria-invalid={!!errors.terms}
-                aria-describedby={errors.terms ? 'terms-error' : undefined}
-              />
-              <label htmlFor="terms">Aceito os <a href="#">termos de uso</a> e <a href="#">política de privacidade</a></label>
-              {touched.terms && errors.terms && (
-                <div id="terms-error" className="error-message" role="alert">
-                  <AlertCircle aria-hidden="true" /> {errors.terms}
-                </div>
-              )}
-            </div>
-
-            <button type="submit" disabled={isSubmitting} className="submit-btn">
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="animate-spin" aria-hidden="true" /> Cadastrando...
-                </>
-              ) : (
-                'Cadastrar-se'
-              )}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="cadastro-btn"
+              aria-disabled={isLoading}
+            >
+              {isLoading ? 'Criando conta...' : 'Criar conta'}
             </button>
           </form>
 
-          <p className="login-text">
-            Já tem uma conta? <a href="/login">Faça login</a>
-          </p>
+          <div className="cadastro-footer">
+            <p>
+              Já possui uma conta?{' '}
+              <button
+                onClick={() => {
+                  if (onBackClick) onBackClick();
+                  else navigate('/login');
+                }}
+                className="cadastro-login-btn"
+                aria-label="Entrar"
+              >
+                Entrar
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>

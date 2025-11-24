@@ -1,5 +1,5 @@
 /* background container */
-.cadastro-bg {
+.login-bg {
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -9,13 +9,13 @@
 }
 
 /* main container */
-.cadastro-wrapper {
+.login-wrapper {
   width: 100%;
   max-width: 28rem; /* 448px for better scaling */
 }
 
 /* white centered card */
-.cadastro-card {
+.login-card {
   background: white;
   border-radius: 1rem;
   padding: 2rem;
@@ -23,7 +23,7 @@
 }
 
 /* header section */
-.cadastro-header {
+.login-header {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,63 +31,65 @@
   text-align: center;
 }
 
-.cadastro-logo-bg {
+.login-logo-bg {
   background: linear-gradient(135deg, #3b82f6, #7c3aed);
   padding: 0.75rem;
   border-radius: 0.75rem;
   margin-bottom: 0.75rem;
 }
 
-.cadastro-logo-icon {
+.login-logo-icon {
+  width: 2rem;
+  height: 2rem;
   color: white;
 }
 
-.cadastro-title {
+.login-title {
   font-size: 1.5rem;
   font-weight: 700;
   color: #1f2937;
   margin-bottom: 0.5rem;
 }
 
-.cadastro-subtitle {
+.login-subtitle {
   font-size: 1.125rem;
   font-weight: 600;
   color: #374151;
   margin-bottom: 0.25rem;
 }
 
-.cadastro-text {
+.login-text {
   font-size: 0.875rem;
   color: #6b7280;
 }
 
 /* form */
-.cadastro-form {
+.login-form {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
 /* input group (label + wrapper) */
-.cadastro-input-group {
+.login-input-group {
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
 }
 
-.cadastro-label {
+.login-label {
   font-size: 0.875rem;
   font-weight: 500;
   color: #374151;
 }
 
 /* input container */
-.cadastro-input-wrapper {
+.login-input-wrapper {
   position: relative;
 }
 
 /* left icon */
-.cadastro-input-icon {
+.login-input-icon {
   position: absolute;
   left: 0.75rem;
   top: 50%;
@@ -96,7 +98,7 @@
 }
 
 /* right icon (eye) */
-.cadastro-input-eye {
+.login-input-eye {
   position: absolute;
   right: 0.75rem;
   top: 50%;
@@ -109,12 +111,12 @@
   padding: 0;
 }
 
-.cadastro-input-eye:hover {
+.login-input-eye:hover {
   color: #4b5563;
 }
 
 /* input field */
-.cadastro-input {
+.login-input {
   width: 100%;
   padding: 0.75rem 0.75rem 0.75rem 2.75rem;
   border: 2px solid #e5e7eb;
@@ -123,85 +125,23 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.cadastro-input:focus {
+.login-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* error input */
-.cadastro-input-error {
+.login-input-error {
   border-color: #fca5a5 !important;
 }
 
-.cadastro-input-error:focus {
+.login-input-error:focus {
   box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.1);
 }
 
-/* input error text */
-.cadastro-input-error-text {
-  font-size: 0.8125rem;
-  color: #ef4444;
-  margin-top: 0.25rem;
-}
-
-/* switch wrapper */
-.cadastro-switch-wrapper {
-  display: flex;
-  gap: 0.5rem;
-  background: #f3f4f6;
-  border-radius: 0.5rem;
-  padding: 0.25rem;
-}
-
-.cadastro-switch-btn {
-  flex: 1;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: #374151;
-  font-weight: 500;
-}
-
-.cadastro-switch-btn.active {
-  background: #2563eb;
-  color: white;
-  box-shadow: 0 0.125rem 0.375rem rgba(37, 99, 235, 0.4);
-}
-
-.cadastro-switch-btn:hover:not(.active) {
-  background: #e5e7eb;
-}
-
-/* success message */
-.cadastro-success-box {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  background: #ecfdf5;
-  border: 2px solid #a7f3d0;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-
-.cadastro-success-icon {
-  color: #059669;
-  margin-top: 0.125rem;
-  flex-shrink: 0;
-}
-
-.cadastro-success-text {
-  font-size: 0.875rem;
-  color: #065f46;
-}
-
 /* error message */
-.cadastro-error-box {
+.login-error-box {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
@@ -209,22 +149,40 @@
   border: 2px solid #fecaca;
   padding: 0.75rem;
   border-radius: 0.75rem;
-  margin-bottom: 0.5rem;
 }
 
-.cadastro-error-icon {
+.login-error-icon {
   color: #dc2626;
   margin-top: 0.125rem;
   flex-shrink: 0;
 }
 
-.cadastro-error-text {
+.login-error-text {
   font-size: 0.875rem;
   color: #b91c1c;
 }
 
+/* forgot password */
+.login-forgot-wrapper {
+  text-align: right;
+  margin-top: -0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.login-forgot-link {
+  font-size: 0.8125rem;
+  color: #2563eb;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.login-forgot-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 /* submit btn */
-.cadastro-btn {
+.login-btn {
   background: linear-gradient(90deg, #2563eb, #3b82f6);
   color: white;
   font-weight: 700;
@@ -235,25 +193,25 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.cadastro-btn:hover:not(:disabled) {
+.login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 0.375rem 0.875rem rgba(0, 0, 0, 0.15);
 }
 
-.cadastro-btn:disabled {
+.login-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-/* footer */
-.cadastro-footer {
+/* bottom area */
+.login-footer {
   margin-top: 1.5rem;
   text-align: center;
   font-size: 0.875rem;
   color: #6b7280;
 }
 
-.cadastro-login-btn {
+.login-register-btn {
   color: #2563eb;
   font-weight: 600;
   background: none;
@@ -263,65 +221,77 @@
   padding: 0;
 }
 
-.cadastro-login-btn:hover {
+.login-register-btn:hover {
   color: #1d4ed8;
   text-decoration: underline;
 }
 
-/* terms */
-.cadastro-terms {
+/* back button */
+.login-back-wrapper {
   margin-top: 1rem;
   text-align: center;
-  font-size: 0.75rem;
+}
+
+.login-back-btn {
+  font-size: 0.8125rem;
   color: #6b7280;
-}
-
-.cadastro-link {
-  color: #2563eb;
-  text-decoration: none;
+  border: none;
+  background: none;
+  cursor: pointer;
   transition: color 0.2s ease;
+  padding: 0;
 }
 
-.cadastro-link:hover {
-  color: #1d4ed8;
+.login-back-btn:hover {
+  color: #374151;
   text-decoration: underline;
 }
 
 /* Media queries for enhanced responsiveness */
 @media (max-width: 480px) {
-  .cadastro-card {
+  .login-card {
     padding: 1.5rem;
     border-radius: 0.75rem;
   }
 
-  .cadastro-title {
+  .login-title {
     font-size: 1.25rem;
   }
 
-  .cadastro-subtitle {
+  .login-subtitle {
     font-size: 1rem;
   }
 
-  .cadastro-text {
+  .login-text {
     font-size: 0.8125rem;
   }
 
-  .cadastro-input {
+  .login-input {
     font-size: 0.875rem;
     padding: 0.625rem 0.625rem 0.625rem 2.5rem;
   }
 
-  .cadastro-btn {
+  .login-btn {
     padding: 0.75rem;
     font-size: 0.9375rem;
   }
 
-  .cadastro-error-text,
-  .cadastro-success-text {
+  .login-error-text {
     font-size: 0.8125rem;
   }
+}
 
-  .cadastro-switch-btn {
-    font-size: 0.8125rem;
-  }
+/* Safe override: keep login card centered and single-column on desktop */
+.login-wrapper { max-width: 720px; margin: 0 auto; }
+.login-card { max-width: 720px; margin: 0 auto; display: block; width: 100%; }
+
+/* Remove any decorative pseudo elements if present from older overrides */
+.login-card::before, .login-card::after { display: none !important; }
+
+/* Ensure header remains centered and not stretched */
+.login-header { align-items: center; text-align: center; }
+
+/* Slightly increase card padding on larger screens but keep single column */
+@media (min-width: 900px) {
+  .login-card { padding: 2.25rem; border-radius: 1rem; }
 }

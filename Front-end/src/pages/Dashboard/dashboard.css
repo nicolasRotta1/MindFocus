@@ -1,0 +1,29 @@
+:root{--indigo:var(--indigo);--indigo-dark:var(--indigo-dark);--white:var(--surface);--bg:var(--bg);--text:var(--text);--muted:var(--muted);--success:var(--success);--danger:var(--danger)}
+
+.dashboard-page{min-height:100vh;padding:40px 0}
+.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.dash-header h2{margin:0;font-size:1.125rem}
+.actions{display:flex;gap:12px;align-items:center}
+.user{background:var(--surface);padding:6px 10px;border-radius:999px;border:1px solid rgba(2,6,23,0.04);font-weight:600}
+.create{display:flex;gap:12px;align-items:center;margin-bottom:20px}
+.create input{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(2,6,23,0.06);background:var(--surface)}
+.btn-primary{background:var(--indigo);color:#fff;padding:10px 14px;border-radius:10px;border:none}
+.btn-danger{background:var(--danger);color:#fff;padding:10px 14px;border-radius:10px;border:none}
+.list ul{list-style:none;padding:0;margin:0}
+.list li{background:var(--surface);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow-sm);transition:transform 0.15s,box-shadow 0.15s}
+.list li:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(15,23,42,0.08)}
+.item{display:flex;justify-content:space-between;align-items:center}
+.item .desc{color:var(--muted);margin:6px 0 0}
+.done{opacity:0.6;text-decoration:line-through}
+.item-actions{display:flex;gap:8px;align-items:center}
+.empty{background:#fff;padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);text-align:center;color:var(--muted)}
+.spinner{padding:20px;text-align:center;color:var(--muted)}
+
+.toast{position:fixed;right:24px;top:24px;padding:12px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(2,6,23,0.08);z-index:60;display:flex;align-items:center;gap:8px}
+.toast.success{background:#ECFDF5;color:var(--success);border:1px solid rgba(16,185,129,0.12)}
+.toast.error{background:#FEF2F2;color:var(--danger);border:1px solid rgba(239,68,68,0.12)}
+
+@media (max-width:700px){
+  .create{flex-direction:column;align-items:stretch}
+  .item{flex-direction:column;align-items:flex-start;gap:10px}
+}
