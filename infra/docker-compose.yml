@@ -129,7 +129,7 @@ services:
     container_name: mindfocus-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "5173:80"
     depends_on:
       habito-service:
         condition: service_healthy
