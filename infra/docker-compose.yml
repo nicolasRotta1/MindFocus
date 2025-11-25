@@ -130,9 +130,6 @@ services:
     restart: unless-stopped
     ports:
       - "5173:80"
-    depends_on:
-      habito-service:
-        condition: service_healthy
     networks:
       - mindfocus-network
     healthcheck:
