@@ -21,40 +21,42 @@ export async function queryUser({
   identifierType: IdentifierType;
   senha: string;
 }) {
-  // Limpa telefone apenas se necessário
   const value = identifierType === 'telefone' ? cleanNumber(identifier) : identifier;
 
   const body = {
-    identifier: value,
+    identificador: value,
     senha,
   };
 
+  console.debug('Auth.login request body:', body);
   try {
-    const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
+    const res = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
 
-    if (!response.ok) {
-      console.warn('Login falhou:', response.status);
-      return null;
+    const text = await res.text();
+    let data: any = null;
+    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+
+    console.debug('Auth.login response:', res.status, data);
+
+    if (!res.ok) {
+      const message = (data && (data.message || data.error)) || (typeof data === 'string' ? data : `Erro ${res.status}`);
+      console.warn('Auth error body:', data);
+      throw new Error(message);
     }
 
-    const data = await response.json();
-
-    // Retorna token e dados adicionais do usuário se existirem
-    if (data.token) {
-      return {
-        token: data.token,
-        user: data.user ?? null,
-      };
+    // expected shape: { token: '...' }
+    if (data && typeof data === 'object' && data.token) {
+      return { token: data.token, user: data.user ?? null };
     }
 
-    return null;
-  } catch (error) {
-    console.error('Erro ao consultar usuário MindFocus:', error);
-    return null;
+    throw new Error('Resposta inválida do servidor');
+  } catch (error: any) {
+    // normalize error
+    throw new Error(error?.message || 'Erro ao efetuar login');
   }
 }
 
@@ -89,13 +91,32 @@ export function clearToken() {
 }
 
 export async function registerUser(payload: { nome: string; email?: string; telefone?: string; senha: string }) {
-  const res = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(`Registro falhou: ${res.status}`);
-  return await res.text();
+  try {
+    const res = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    console.debug('Auth.register request body:', payload);
+
+    const text = await res.text();
+    let data: any = null;
+    try { data = text ? JSON.parse(text) : text; } catch { data = text; }
+
+    console.debug('Auth.register response:', res.status, data);
+
+    if (!res.ok) {
+      const message = (data && (data.message || data.error)) || (typeof data === 'string' ? data : `Erro ${res.status}`);
+      console.warn('Auth error body:', data);
+      throw new Error(message);
+    }
+
+    // return server message (string) or object
+    return data ?? text;
+  } catch (err: any) {
+    throw new Error(err?.message || 'Erro ao registrar usuário');
+  }
 }
 
 export async function logout() {

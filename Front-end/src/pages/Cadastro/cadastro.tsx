@@ -81,12 +81,19 @@ export default function Cadastro({ onBackClick }: CadastroProps) {
     setErrors({});
 
     try {
-      const payload = {
-        nome: formData.name,
-        email: authMethod === 'email' ? formData.email : '',
-        telefone: authMethod === 'phone' ? formData.phone : '',
+      const payload: any = {
+        nome: formData.name.trim(),
         senha: formData.password,
       };
+
+      if (authMethod === 'email' && formData.email.trim()) {
+        payload.email = formData.email.trim();
+      }
+      if (authMethod === 'phone' && formData.phone.trim()) {
+        // enviar telefone apenas com dígitos e opcional +
+        const cleaned = formData.phone.replace(/[^+\d]/g, '');
+        payload.telefone = cleaned;
+      }
 
       // Call backend register
       await registerUser(payload);

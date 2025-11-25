@@ -37,9 +37,10 @@ export default function Login() {
 
       setToken(result.token);
       navigate('/dashboard');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Login error', err);
-      setError('Erro ao conectar com o servidor. Tente mais tarde.');
+      const message = err?.message || 'Erro ao conectar com o servidor. Tente mais tarde.';
+      setError(message);
     } finally {
       setIsLoading(false);
     }
