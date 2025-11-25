@@ -1,6 +1,9 @@
 # Multi-stage build para otimizar tamanho da imagem
 FROM maven:3.9-eclipse-temurin-17 AS build
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 WORKDIR /app
 
 # Copiar arquivos de configuração do Maven
