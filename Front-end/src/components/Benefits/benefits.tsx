@@ -1,5 +1,5 @@
 import { CheckSquare, Calendar, Target, BarChart3 } from 'lucide-react';
-import './Benefits.css';
+import './benefits.css';
 
 const benefits = [
   {

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Brain, Mail, Phone, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { queryUser, setToken } from '../../lib/Auth';
 import type { IdentifierType } from '../../lib/Auth';
-import './login.css';
+import './Login.css';
 
 export default function Login() {
   const [identifier, setIdentifier] = useState('');

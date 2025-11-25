@@ -1,4 +1,3 @@
-import { API_ENDPOINTS } from '../config/api';
 import { getToken, clearToken } from './Auth';
 
 export interface ApiResponse<T = any> {
