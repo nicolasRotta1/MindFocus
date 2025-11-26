@@ -1,0 +1,23 @@
+.mf-floating-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 9999px;
+  background: #3b82f6; 
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(16,24,40,0.15);
+  border: 0;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+  z-index: 40;
+}
+.mf-floating-button:hover {
+  transform: translateY(-3px);
+  background: #2563eb; 
+  box-shadow: 0 14px 40px rgba(16,24,40,0.18);
+}

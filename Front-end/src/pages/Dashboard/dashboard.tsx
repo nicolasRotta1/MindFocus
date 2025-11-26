@@ -1,203 +1,117 @@
-import { useEffect, useState } from 'react';
-import { listarHabitos, criarHabito, atualizarHabito, deletarHabito, concluirHabito } from '../../lib/habito';
-import type { Habito } from '../../lib/habito';
-import { getToken, logout, fetchCurrentUser } from '../../lib/Auth';
+
 import './dashboard.css';
+import { getHabits, concludeHabit, deleteHabit, updateHabit } from '../../Services/HabitsService';
+import type { HabitResponse } from '../../Types';
+import { useEffect, useState } from 'react';
+import Sidebar from '../../components/SideBar/sidebar';
+import Header from '../../components/Header/header';
+import StatsCards from '../../components/StatCard/statcard';
+import HabitCard from '../../components/HabitCard/habitcard';
+import ProgressSection from '../../components/ProgressSection/progresssection';
+import FloatingButton from '../../components/FloatingButton/floatingbutton';
+import NewHabitModal from '../../components/NewHabitModal/newhabitmodal';
 
 export default function Dashboard() {
-  const [habitos, setHabitos] = useState<Habito[]>([]);
+  const [habits, setHabits] = useState<HabitResponse[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editing, setEditing] = useState<HabitResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [formNome, setFormNome] = useState('');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
-
-  const token = getToken();
-
-  const handleUnauthorized = async () => {
-    try {
-      await logout();
-    } catch (e) {
-      // ignore
-    }
-    window.location.href = '/login';
-  };
 
   const load = async () => {
     setLoading(true);
-    setError(null);
     try {
-      const data = await listarHabitos();
-      setHabitos(data || []);
-    } catch (err: any) {
-      console.error(err);
-      setError('Erro ao carregar hábitos. Tente novamente.');
-      // Se devolveu erro de autorização, redireciona para login
-      if (String(err).includes('401')) {
-        await handleUnauthorized();
-        return;
-      }
+      const data = await getHabits();
+      setHabits(data);
+    } catch (err) {
+      console.error('Erro ao carregar hábitos', err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      if (!token) return;
-      try {
-        const u = await fetchCurrentUser();
-        if (!u) {
-          await handleUnauthorized();
-          return;
-        }
-        setUser(u);
-        await load();
-      } catch (err: any) {
-        console.error(err);
-        setError('Erro ao obter dados do usuário.');
-        if (String(err).includes('401')) {
-          await handleUnauthorized();
-        }
-      }
-    })();
-  }, [token]);
+  useEffect(() => { load(); }, []);
 
-  const handleCreate = async () => {
-    if (!formNome.trim()) return;
-    setCreating(true);
-    setError(null);
-    setInfo(null);
+  const handleConclude = async (id: number) => {
     try {
-      const novo = await criarHabito({ nome: formNome });
-      setHabitos(prev => [novo, ...prev]);
-      setFormNome('');
-      setInfo('Hábito criado com sucesso.');
-    } catch (err: any) {
-      console.error(err);
-      setError('Erro ao criar hábito.');
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const handleDelete = async (id?: string) => {
-    if (!id) return;
-    try {
-      await deletarHabito(id);
-      setHabitos(prev => prev.filter(h => h.id !== id));
-      setInfo('Hábito removido.');
+      await concludeHabit(id);
+      await load();
     } catch (err) {
       console.error(err);
-      setError('Erro ao remover hábito.');
     }
   };
 
-  const handleConcluir = async (id?: string) => {
-    if (!id) return;
+  // Como não existe "PAUSADO" no backend, vamos usar ATRASADO como pausa
+  const handlePause = async (id: number) => {
     try {
-      const updated = await concluirHabito(id);
-      setHabitos(prev => prev.map(h => (h.id === updated.id ? updated : h)));
-      setInfo('Hábito marcado como concluído.');
+      await updateHabit(id, { status: 'ATRASADO' });
+      await load();
     } catch (err) {
       console.error(err);
-      setError('Erro ao concluir hábito.');
     }
   };
 
-  const startEdit = (h: Habito) => {
-    setEditingId(h.id || null);
-    setFormNome(h.nome);
-  };
-
-  const submitEdit = async () => {
-    if (!editingId) return;
+  const handleDelete = async (id: number) => {
+    if (!confirm('Deseja realmente excluir este hábito?')) return;
     try {
-      const updated = await atualizarHabito(editingId, { nome: formNome });
-      setHabitos(prev => prev.map(h => (h.id === updated.id ? updated : h)));
-      setEditingId(null);
-      setFormNome('');
-      setInfo('Hábito atualizado.');
+      await deleteHabit(id);
+      await load();
     } catch (err) {
       console.error(err);
-      setError('Erro ao atualizar hábito.');
+      alert('Erro ao excluir. Veja o console.');
     }
   };
 
-  const handleInputKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      if (editingId) submitEdit();
-      else handleCreate();
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      window.location.href = '/login';
-    } catch (err) {
-      console.error(err);
-      window.location.href = '/login';
-    }
+  const handleEdit = (h: HabitResponse) => {
+    setEditing(h);
+    setIsModalOpen(true);
   };
 
   return (
-    <div className="dashboard-page">
-      <header className="dash-header">
-        <h2>MindFocus - Meus Hábitos</h2>
-        <div className="actions">
-          {user && <span className="user">{user.nome || user.email}</span>}
-          <button onClick={handleLogout} className="btn-ghost">Sair</button>
-        </div>
-      </header>
+    <div className="mf-app-root">
+      <Sidebar />
+      <div className="mf-main-content">
+        <Header />
+        <main className="mf-main-padded">
+          <StatsCards />
+          <div className="mf-grid-layout">
+            <div className="mf-left">
+              <div className="mf-habits-header">
+                <h2>Meus Hábitos</h2>
+                <span className="mf-muted">{habits.length} hábitos</span>
+              </div>
 
-      <main>
-        {error && <div className="toast error">{error}</div>}
-        {info && <div className="toast success">{info}</div>}
-        <section className="create">
-          <input value={formNome} onChange={e => setFormNome(e.target.value)} onKeyDown={handleInputKey} placeholder="Novo hábito" />
-          {editingId ? (
-            <>
-              <button onClick={submitEdit} className="btn-primary">Salvar</button>
-              <button onClick={() => { setEditingId(null); setFormNome(''); }} className="btn-ghost">Cancelar</button>
-            </>
-          ) : (
-            <button onClick={handleCreate} className="btn-primary" disabled={creating}>{creating ? 'Criando...' : 'Criar'}</button>
-          )}
-        </section>
-
-        <section className="list">
-          {loading ? (
-            <div className="spinner">Carregando...</div>
-          ) : (
-            <> 
-              {habitos.length === 0 ? (
-                <div className="empty">Nenhum hábito encontrado. Crie o seu primeiro hábito!</div>
+              {loading ? (
+                <p>Carregando...</p>
               ) : (
-                <ul>
-                  {habitos.map(h => (
-                    <li key={h.id} className={h.concluido ? 'done' : ''}>
-                      <div className="item">
-                        <div>
-                          <strong>{h.nome}</strong>
-                          {h.descricao && <p className="desc">{h.descricao}</p>}
-                        </div>
-                        <div className="item-actions">
-                          <button onClick={() => startEdit(h)} className="btn-ghost">Editar</button>
-                          <button onClick={() => handleConcluir(h.id)} className="btn-primary small">Concluir</button>
-                          <button onClick={() => handleDelete(h.id)} className="btn-danger small">Remover</button>
-                        </div>
-                      </div>
-                    </li>
+                <div className="mf-habits-grid">
+                  {habits.map((h) => (
+                    <HabitCard
+                      key={h.id}
+                      {...h}
+                      onConclude={handleConclude}
+                      onEdit={handleEdit}
+                      onPause={handlePause}
+                      onDelete={handleDelete}
+                    />
                   ))}
-                </ul>
+                </div>
               )}
-            </>
-          )}
-        </section>
-      </main>
+            </div>
+
+            <aside className="mf-right">
+              <ProgressSection />
+            </aside>
+          </div>
+        </main>
+      </div>
+
+      <FloatingButton onClick={() => { setEditing(null); setIsModalOpen(true); }} />
+      <NewHabitModal
+        isOpen={isModalOpen}
+        onClose={() => { setIsModalOpen(false); setEditing(null); }}
+        editing={editing}
+        onSaved={(_) => { load(); }}
+      />
     </div>
   );
 }

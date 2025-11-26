@@ -1,0 +1,121 @@
+.mf-progress {
+    background:#fff;
+    border-radius:14px; 
+    padding:1rem; 
+    border:1px solid #e6e6e6; 
+}
+
+.mf-progress h3 { 
+    margin:0 0 0.6rem 0; 
+    font-size:1.05rem; 
+    font-weight:700; 
+    color:#111827; 
+}
+
+.mf-small { 
+    color:#6b7280; 
+    font-size:0.85rem; 
+}
+
+.mf-streak-row { 
+    display:flex; 
+    gap:0.75rem; 
+    margin-top:0.5rem; 
+}
+
+.mf-streak-item { 
+    display:flex; 
+    flex-direction:column; 
+    align-items:center; 
+    gap:0.4rem; 
+}
+.mf-streak-circle { 
+    width:40px; 
+    height:40px; 
+    border-radius:9999px; 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+    font-weight:700; 
+}
+
+.mf-streak-circle.done { 
+    background:#10b981; 
+    color:#fff; 
+}
+
+.mf-streak-circle.miss { 
+    background:#f3f4f6; 
+    color:#9ca3af; 
+}
+
+.mf-weekly-chart { 
+    margin-top:0.9rem; 
+}
+
+.mf-bars-row { 
+    display:flex; 
+    gap:0.5rem; 
+    align-items:end; 
+    height:160px; 
+}
+
+.mf-bar-col { 
+    display:flex; 
+    flex-direction:column; 
+    align-items:center; 
+    gap:0.4rem; 
+    flex:1; 
+}
+.mf-bar-bg { 
+    width:100%; 
+    height:100%; 
+    background:#f3f4f6; 
+    border-top-left-radius:8px; 
+    border-top-right-radius:8px; 
+    overflow:hidden; 
+    display:flex; 
+    align-items:end; 
+}
+
+.mf-bar-fill {
+    width:100%; 
+    background:linear-gradient(180deg,#3b82f6,#60a5fa); 
+    border-top-left-radius:8px; 
+    border-top-right-radius:8px; 
+    transition: height .3s ease; 
+}
+
+.mf-month-progress {
+    margin-top:1rem; 
+    background:#eff6ff; 
+    padding:0.6rem; 
+    border-radius:8px; 
+}
+
+.mf-month-row { 
+    display:flex; 
+    justify-content:space-between; 
+    align-items:center; 
+}
+
+.mf-month-percent { 
+    color:#2563eb; 
+    font-weight:800; 
+    font-size:1.05rem; 
+}
+
+.mf-month-bar { 
+    margin-top:0.5rem; 
+    width:100%; 
+    background:#dbeafe; 
+    border-radius:9999px; 
+    height:10px; 
+    overflow:hidden; 
+}
+
+.mf-month-fill { 
+    height:100%; 
+    background:#3b82f6; 
+    border-radius:9999px; 
+}
