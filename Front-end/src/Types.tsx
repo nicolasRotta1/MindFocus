@@ -1,5 +1,3 @@
-// Types.ts
-
 export type HabitType = 'SIM_NAO' | 'QUANTITATIVO';
 export type HabitFrequency = 'DIARIO' | 'SEMANAL' | 'MENSAL';
 export type HabitStatus = 'PENDENTE' | 'CONCLUIDO' | 'ATRASADO';

@@ -1,81 +1,52 @@
 import api, { API_ENDPOINTS } from '../config/api';
 
-export interface User {
-  id: number;
-  nome: string;
-  email?: string;
-  telefone?: string;
-}
-
-export const IdentifierType = {
-  EMAIL: 'email',
-  TELEFONE: 'telefone',
-} as const;
-
-export type IdentifierType = typeof IdentifierType[keyof typeof IdentifierType];
-
-export async function queryUser(identifier: string, type: IdentifierType): Promise<boolean> {
-  try {
-    const response = await api.get<{ exists: boolean }>(`/api/usuarios/exists?${type}=${identifier}`);
-    return response.data.exists;
-  } catch {
-    return false; 
-  }
-}
-
+export type IdentifierType = 'telefone' | 'email';
 
 interface AuthResponse {
   token: string;
-  user: User;
+  user?: any;
 }
 
-interface RegisterPayload {
-  nome: string;
-  email?: string;
-  telefone?: string;
-  senha: string;
+export function setToken(token: string) {
+  localStorage.setItem('authToken', token);
 }
 
-// Token helpers (exported for reuse)
 export function getToken(): string | null {
   return localStorage.getItem('authToken');
 }
 
-export function setToken(token: string): void {
-  localStorage.setItem('authToken', token);
-}
-
-export function clearToken(): void {
+export function clearToken() {
   localStorage.removeItem('authToken');
 }
 
-export async function login(identifier: string, senha: string): Promise<User> {
+export async function login(identifier: string, senha: string) {
   const body = { identificador: identifier, senha };
-  const response = await api.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, body);
-
-  if (response?.data?.token) {
-    setToken(response.data.token);
-    return response.data.user;
+  const { data } = await api.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, body);
+  if (data?.token) {
+    setToken(data.token);
+    return data.user ?? null;
   }
   throw new Error('Resposta inesperada do servidor');
 }
 
-export async function register(payload: RegisterPayload): Promise<AuthResponse> {
-  const response = await api.post<AuthResponse>(API_ENDPOINTS.AUTH.REGISTER, payload);
-  return response.data;
+export async function register(payload: { nome: string; email?: string; telefone?: string; senha: string }) {
+  const { data } = await api.post(API_ENDPOINTS.AUTH.REGISTER, payload);
+  return data; // backend pode retornar token+user
 }
 
-export async function logout(): Promise<void> {
-  await api.post(API_ENDPOINTS.AUTH.LOGOUT);
-  clearToken();
-}
-
-export async function fetchCurrentUser(): Promise<User | null> {
+export async function logout() {
   try {
-    const response = await api.get<User>(API_ENDPOINTS.USUARIO.ATUAL);
-    return response.data ?? null;
+    await api.post(API_ENDPOINTS.AUTH.LOGOUT);
+  } finally {
+    clearToken();
+  }
+}
+
+export async function fetchCurrentUser() {
+  try {
+    const { data } = await api.get(API_ENDPOINTS.USUARIO.ATUAL);
+    return data ?? null;
   } catch {
     return null;
   }
 }
-

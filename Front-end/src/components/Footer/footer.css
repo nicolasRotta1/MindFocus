@@ -1,17 +1,17 @@
 .footer {
-  background-color: #111827; /* bg-gray-900 */
-  color: #d1d5db; /* text-gray-300 */
-  padding: 3rem 1rem; /* py-12 px-4 */
+  background-color: #111827; 
+  color: #d1d5db; 
+  padding: 3rem 1rem; 
 }
 
 .footer-container {
-  max-width: 80rem; /* max-w-7xl */
+  max-width: 80rem; 
   margin: 0 auto;
 }
 
 .footer-grid {
   display: grid;
-  gap: 2rem; /* gap-8 */
+  gap: 2rem; 
   margin-bottom: 2rem;
 }
 
@@ -35,7 +35,7 @@
 .footer-logo-icon {
   width: 1.5rem;
   height: 1.5rem;
-  color: #60a5fa; /* text-blue-400 */
+  color: #60a5fa; 
 }
 
 .footer-logo-text {
@@ -79,7 +79,7 @@
 }
 
 .footer-bottom {
-  border-top: 1px solid #1f2937; /* border-gray-800 */
+  border-top: 1px solid #1f2937; 
   padding-top: 2rem;
   text-align: center;
 }

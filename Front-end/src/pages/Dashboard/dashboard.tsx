@@ -1,15 +1,14 @@
-
 import './dashboard.css';
 import { getHabits, concludeHabit, deleteHabit, updateHabit } from '../../Services/HabitsService';
 import type { HabitResponse } from '../../Types';
 import { useEffect, useState } from 'react';
 import Sidebar from '../../components/SideBar/sidebar';
-import Header from '../../components/Header/header';
 import StatsCards from '../../components/StatCard/statcard';
 import HabitCard from '../../components/HabitCard/habitcard';
 import ProgressSection from '../../components/ProgressSection/progresssection';
 import FloatingButton from '../../components/FloatingButton/floatingbutton';
 import NewHabitModal from '../../components/NewHabitModal/newhabitmodal';
+import HeaderDashboard from '../../components/HeaderDashboard/headerdashboard';
 
 export default function Dashboard() {
   const [habits, setHabits] = useState<HabitResponse[]>([]);
@@ -40,7 +39,6 @@ export default function Dashboard() {
     }
   };
 
-  // Como não existe "PAUSADO" no backend, vamos usar ATRASADO como pausa
   const handlePause = async (id: number) => {
     try {
       await updateHabit(id, { status: 'ATRASADO' });
@@ -70,9 +68,11 @@ export default function Dashboard() {
     <div className="mf-app-root">
       <Sidebar />
       <div className="mf-main-content">
-        <Header />
+        <HeaderDashboard />
+
         <main className="mf-main-padded">
           <StatsCards />
+
           <div className="mf-grid-layout">
             <div className="mf-left">
               <div className="mf-habits-header">
@@ -110,7 +110,7 @@ export default function Dashboard() {
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditing(null); }}
         editing={editing}
-        onSaved={(_) => { load(); }}
+        onSaved={() => load()}
       />
     </div>
   );

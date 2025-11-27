@@ -2,8 +2,8 @@
   min-height: 100vh;
   background: linear-gradient(
     to bottom right,
-    #eff6ff, /* blue-50 */
-    #ecfdf5, /* green-50 */
-    #faf5ff  /* purple-50 */
+    #eff6ff, 
+    #ecfdf5, 
+    #faf5ff  
   );
 }

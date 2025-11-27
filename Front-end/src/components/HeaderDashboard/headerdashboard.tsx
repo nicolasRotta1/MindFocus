@@ -1,24 +1,27 @@
 import { Bell, Flame } from 'lucide-react';
 import './headerdashboard.css';
-import { api } from '../../config/api';
+import api, { API_ENDPOINTS } from '../../config/api';
 import { useEffect, useState } from 'react';
 
 export default function HeaderDashboard() {
   const [userName, setUserName] = useState('Usuário');
-  const [streak, setStreak] = useState<number | null>(7);
+  const [streak, setStreak] = useState<number | null>(null);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const { data } = await api.get('/usuario/atual');
-        if (!mounted) return;
+        const resp = await api.get(API_ENDPOINTS.USUARIO.ATUAL);
+        const data = resp?.data;
+        if (!mounted || !data) return;
         setUserName(data?.nome || 'Usuário');
-        if (data?.streak) setStreak(data.streak);
+        if (typeof data?.streak === 'number') setStreak(data.streak);
       } catch (err) {
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -29,7 +32,7 @@ export default function HeaderDashboard() {
       </div>
 
       <div className="mf-header-right">
-        <div className="mf-streak">
+        <div className="mf-streak" title={`${streak ?? '-'} dias de streak`}>
           <Flame size={16} />
           <span className="mf-streak-text">{streak ?? '-' } dias de streak</span>
         </div>
@@ -39,7 +42,9 @@ export default function HeaderDashboard() {
           <span className="mf-notif-dot" />
         </button>
 
-        <div className="mf-avatar">U</div>
+        <div className="mf-avatar" aria-hidden>
+          {userName ? userName.charAt(0).toUpperCase() : 'U'}
+        </div>
       </div>
     </header>
   );

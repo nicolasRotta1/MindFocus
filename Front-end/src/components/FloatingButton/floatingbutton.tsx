@@ -8,7 +8,7 @@ interface FloatingButtonProps {
 export default function FloatingButton({ onClick }: FloatingButtonProps) {
   return (
     <button onClick={onClick} className="mf-floating-button" aria-label="Adicionar hábito">
-      <Plus size={20} />
+      <Plus size={24} />
     </button>
   );
 }

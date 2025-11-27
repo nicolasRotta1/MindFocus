@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import './newhabitmodal.css';
 import { createHabit, updateHabit } from '../../Services/HabitsService';
@@ -18,12 +18,11 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
   const [notificacaoAtiva, setNotificacaoAtiva] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Preenche se for edição
   useEffect(() => {
     if (editing) {
-      setNome(editing.nome || '');
-      setTipo(editing.tipo);
-      setFrequencia(editing.frequencia);
+      setNome(editing.nome ?? '');
+      setTipo((editing.tipo as HabitType) ?? 'SIM_NAO');
+      setFrequencia((editing.frequencia as HabitFrequency) ?? 'DIARIO');
       setNotificacaoAtiva(editing.notificacaoAtiva ?? true);
     } else {
       setNome('');
@@ -37,6 +36,7 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
 
   const submit = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    if (saving) return;
     setSaving(true);
 
     const payload: HabitRequest = {
@@ -47,8 +47,8 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
     };
 
     try {
-      if (editing?.id) {
-        const updated = await updateHabit(editing.id, payload);
+      if (editing?.id != null) {
+        const updated = await updateHabit(editing.id as number, payload);
         onSaved?.(updated);
       } else {
         const created = await createHabit(payload);
@@ -64,49 +64,58 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
   };
 
   return (
-    <div className="mf-modal-backdrop" role="dialog" aria-modal="true">
+    <div className="mf-modal-backdrop" role="dialog" aria-modal="true" aria-label={editing ? 'Editar hábito' : 'Criar hábito'}>
       <div className="mf-modal">
         <div className="mf-modal-header">
           <h2>{editing ? 'Editar Hábito' : 'Criar Novo Hábito'}</h2>
-          <button onClick={onClose} className="mf-icon-btn">
+          <button onClick={onClose} className="mf-icon-btn" aria-label="Fechar">
             <X size={18} />
           </button>
         </div>
 
         <form className="mf-form" onSubmit={submit}>
-          <label className="mf-label">Nome do Hábito</label>
+          <label className="mf-label" htmlFor="habit-name">Nome do Hábito</label>
           <input
+            id="habit-name"
             className="mf-input"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
             placeholder="Ex: Meditar"
             required
+            maxLength={120}
+            aria-required
           />
 
           <label className="mf-label">Tipo do Hábito</label>
-          <div className="mf-frequency-row">
+          <div className="mf-grid-typeselect" role="tablist" aria-label="Tipo do hábito">
             <button
               type="button"
-              className={`mf-frequency-btn ${tipo === 'SIM_NAO' ? 'active' : ''}`}
+              className={`mf-type-item ${tipo === 'SIM_NAO' ? 'active' : ''}`}
               onClick={() => setTipo('SIM_NAO')}
+              role="tab"
+              aria-selected={tipo === 'SIM_NAO'}
             >
               Sim / Não
             </button>
+
             <button
               type="button"
-              className={`mf-frequency-btn ${tipo === 'QUANTITATIVO' ? 'active' : ''}`}
+              className={`mf-type-item ${tipo === 'QUANTITATIVO' ? 'active' : ''}`}
               onClick={() => setTipo('QUANTITATIVO')}
+              role="tab"
+              aria-selected={tipo === 'QUANTITATIVO'}
             >
               Quantitativo
             </button>
           </div>
 
           <label className="mf-label">Frequência</label>
-          <div className="mf-frequency-row">
+          <div className="mf-frequency-row" role="radiogroup" aria-label="Frequência do hábito">
             <button
               type="button"
               className={`mf-frequency-btn ${frequencia === 'DIARIO' ? 'active' : ''}`}
               onClick={() => setFrequencia('DIARIO')}
+              aria-pressed={frequencia === 'DIARIO'}
             >
               Diário
             </button>
@@ -114,6 +123,7 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
               type="button"
               className={`mf-frequency-btn ${frequencia === 'SEMANAL' ? 'active' : ''}`}
               onClick={() => setFrequencia('SEMANAL')}
+              aria-pressed={frequencia === 'SEMANAL'}
             >
               Semanal
             </button>
@@ -121,6 +131,7 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
               type="button"
               className={`mf-frequency-btn ${frequencia === 'MENSAL' ? 'active' : ''}`}
               onClick={() => setFrequencia('MENSAL')}
+              aria-pressed={frequencia === 'MENSAL'}
             >
               Mensal
             </button>
@@ -134,18 +145,18 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
             <button
               type="button"
               className={`mf-toggle ${notificacaoAtiva ? 'on' : ''}`}
-              onClick={() => setNotificacaoAtiva(!notificacaoAtiva)}
+              onClick={() => setNotificacaoAtiva((s) => !s)}
+              aria-pressed={notificacaoAtiva}
+              aria-label={notificacaoAtiva ? 'Desativar notificações' : 'Ativar notificações'}
             >
               <div className="mf-toggle-knob" />
             </button>
           </div>
 
           <div className="mf-form-actions">
-            <button type="button" onClick={onClose} className="mf-btn mf-btn-outline">
-              Cancelar
-            </button>
+            <button type="button" onClick={onClose} className="mf-btn mf-btn-outline">Cancelar</button>
             <button type="submit" className="mf-btn mf-btn-primary" disabled={saving}>
-              {saving ? 'Salvando...' : 'Salvar Hábito'}
+              {saving ? 'Salvando...' : (editing ? 'Salvar alterações' : 'Salvar Hábito')}
             </button>
           </div>
         </form>

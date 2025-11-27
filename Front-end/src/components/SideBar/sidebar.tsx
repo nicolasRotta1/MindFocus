@@ -10,15 +10,15 @@ export default function Sidebar() {
       </div>
 
       <nav className="mf-nav">
-        <a href="#" className="mf-nav-item active"><Home size={18}/> <span>Dashboard</span></a>
-        <a href="#" className="mf-nav-item"><Target size={18}/> <span>Meus Hábitos</span></a>
-        <a href="#" className="mf-nav-item"><TrendingUp size={18}/> <span>Progresso / Insights</span></a>
-        <a href="#" className="mf-nav-item"><Calendar size={18}/> <span>Rotina</span></a>
-        <a href="#" className="mf-nav-item"><User size={18}/> <span>Perfil</span></a>
+        <a href="#" className="mf-nav-item active"><Home size={20} /> <span>Dashboard</span></a>
+        <a href="#" className="mf-nav-item"><Target size={20} /> <span>Meus Hábitos</span></a>
+        <a href="#" className="mf-nav-item"><TrendingUp size={20} /> <span>Progresso / Insights</span></a>
+        <a href="#" className="mf-nav-item"><Calendar size={20} /> <span>Rotina</span></a>
+        <a href="#" className="mf-nav-item"><User size={20} /> <span>Perfil</span></a>
       </nav>
 
       <div className="mf-sidebar-bottom">
-        <button className="mf-logout"><LogOut size={16}/> <span>Sair</span></button>
+        <button className="mf-logout"><LogOut size={20} /> <span>Sair</span></button>
       </div>
     </aside>
   );

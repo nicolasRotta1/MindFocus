@@ -1,33 +1,33 @@
 .motivation {
-  padding-top: 5rem;   /* py-20 */
+  padding-top: 5rem;   
   padding-bottom: 5rem;
-  padding-left: 1rem;  /* px-4 */
+  padding-left: 1rem;  
   padding-right: 1rem;
 }
 
 @media (min-width: 640px) {
   .motivation {
-    padding-left: 1.5rem;  /* sm:px-6 */
+    padding-left: 1.5rem;  
     padding-right: 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .motivation {
-    padding-left: 2rem; /* lg:px-8 */
+    padding-left: 2rem;
     padding-right: 2rem;
   }
 }
 
 .motivation-container {
-  max-width: 56rem; /* max-w-4xl */
+  max-width: 56rem;
   margin-left: auto;
   margin-right: auto;
 }
 
 .motivation-box {
   background-image: linear-gradient(to right, #2563eb, #16a34a);
-  border-radius: 1.5rem; /* rounded-3xl */
+  border-radius: 1.5rem;
   padding: 3rem;
   text-align: center;
   box-shadow: 0 30px 40px rgba(0,0,0,0.25);
@@ -40,7 +40,7 @@
 }
 
 .motivation-icon-bg {
-  background-color: rgba(255, 255, 255, 0.2); /* bg-white/20 */
+  background-color: rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   padding: 0.75rem;
 }
