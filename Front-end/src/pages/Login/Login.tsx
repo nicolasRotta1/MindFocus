@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, Mail, Phone, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { queryUser, setToken } from '../../Services/Auth';
-import type { IdentifierType } from '../../Services/Auth';
+import { login } from '../../Services/Auth';
 import './Login.css';
 
 export default function Login() {
@@ -14,33 +13,26 @@ export default function Login() {
 
   const navigate = useNavigate();
 
+  // Só usado para trocar o ícone (email ↔ telefone)
   const isEmail = identifier.includes('@');
-  const identifierType: IdentifierType = isEmail ? 'email' : 'telefone';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     if (!identifier.trim() || !password.trim()) {
       setError('Por favor, preencha todos os campos');
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
     try {
-      const result = await queryUser({ identifier: identifier.trim(), identifierType, senha: password });
-      if (!result || !result.token) {
-        setError('Credenciais inválidas. Verifique e tente novamente.');
-        setIsLoading(false);
-        return;
-      }
-
-      setToken(result.token);
+      await login(identifier.trim(), password);
       navigate('/dashboard');
     } catch (err: any) {
       console.error('Login error', err);
-      const message = err?.message || 'Erro ao conectar com o servidor. Tente mais tarde.';
-      setError(message);
+      setError('Email/telefone ou senha incorretos');
     } finally {
       setIsLoading(false);
     }
@@ -55,59 +47,64 @@ export default function Login() {
               <Brain className="login-logo-icon" />
             </div>
             <h1 className="login-title">MindFocus</h1>
-            <h2 className="login-subtitle">Bem-vindo de volta 👋</h2>
+            <h2 className="login-subtitle">Bem-vindo de volta</h2>
             <p className="login-text">Continue sua jornada de evolução pessoal</p>
           </div>
 
           <form onSubmit={handleSubmit} className="login-form" noValidate>
+            {/* Campo de Email ou Telefone */}
             <div className="login-input-wrapper">
-              <label htmlFor="identifier" className="sr-only">Email ou telefone</label>
-              <div className="login-input-icon" aria-hidden>
+              <label htmlFor="identifier" className="sr-only">
+                Email ou telefone
+              </label>
+              <div className="login-input-icon" aria-hidden="true">
                 {isEmail ? <Mail /> : <Phone />}
               </div>
               <input
                 id="identifier"
-                name="identifier"
                 type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="email@exemplo.com ou +551199999999"
-                className={`login-input ${error && !identifier ? 'login-input-error' : ''}`}
+                placeholder="email@exemplo.com ou +5511999999999"
+                className="login-input"
                 autoComplete="username"
-                aria-invalid={!!error && !identifier}
+                required
               />
             </div>
 
+            {/* Campo de Senha */}
             <div className="login-input-wrapper">
-              <label htmlFor="password" className="sr-only">Senha</label>
-              <div className="login-input-icon" aria-hidden>
+              <label htmlFor="password" className="sr-only">
+                Senha
+              </label>
+              <div className="login-input-icon" aria-hidden="true">
                 <Lock />
               </div>
               <input
                 id="password"
-                name="password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Sua senha"
-                className={`login-input ${error && !password ? 'login-input-error' : ''}`}
+                className="login-input"
                 autoComplete="current-password"
-                aria-invalid={!!error && !password}
+                required
               />
-
               <button
                 type="button"
-                onClick={() => setShowPassword((s) => !s)}
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="login-input-eye"
-                aria-pressed={showPassword}
                 aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                 title={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
               >
                 {showPassword ? <EyeOff /> : <Eye />}
-                <span className="sr-only">{showPassword ? 'Ocultar senha' : 'Mostrar senha'}</span>
+                <span className="sr-only">
+                  {showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                </span>
               </button>
             </div>
 
+            {/* Mensagem de erro */}
             {error && (
               <div className="login-error-box" role="alert">
                 <AlertCircle className="login-error-icon" />
@@ -115,19 +112,23 @@ export default function Login() {
               </div>
             )}
 
+            {/* Botão de login */}
             <button
               type="submit"
               disabled={isLoading}
               className="login-btn"
+              aria-disabled={isLoading}
             >
               {isLoading ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
 
+          {/* Footer */}
           <div className="login-footer">
             <p>
               Não possui conta?{' '}
               <button
+                type="button"
                 className="login-register-btn"
                 onClick={() => navigate('/cadastro')}
                 aria-label="Criar conta"
@@ -138,8 +139,14 @@ export default function Login() {
           </div>
         </div>
 
+        {/* Botão Voltar */}
         <div className="login-back-wrapper">
-          <button className="login-back-btn" onClick={() => navigate(-1)} aria-label="Voltar">
+          <button
+            type="button"
+            className="login-back-btn"
+            onClick={() => navigate(-1)}
+            aria-label="Voltar"
+          >
             Voltar
           </button>
         </div>

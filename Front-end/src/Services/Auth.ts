@@ -7,6 +7,23 @@ export interface User {
   telefone?: string;
 }
 
+export const IdentifierType = {
+  EMAIL: 'email',
+  TELEFONE: 'telefone',
+} as const;
+
+export type IdentifierType = typeof IdentifierType[keyof typeof IdentifierType];
+
+export async function queryUser(identifier: string, type: IdentifierType): Promise<boolean> {
+  try {
+    const response = await api.get<{ exists: boolean }>(`/api/usuarios/exists?${type}=${identifier}`);
+    return response.data.exists;
+  } catch {
+    return false; 
+  }
+}
+
+
 interface AuthResponse {
   token: string;
   user: User;
@@ -61,3 +78,4 @@ export async function fetchCurrentUser(): Promise<User | null> {
     return null;
   }
 }
+

@@ -1,5 +1,5 @@
 import { Home, Target, TrendingUp, Calendar, User, LogOut } from 'lucide-react';
-import './Sidebar.css';
+import './sidebar.css';
 
 export default function Sidebar() {
   return (

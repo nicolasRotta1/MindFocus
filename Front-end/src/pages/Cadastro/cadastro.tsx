@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { Brain, Mail, Phone, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import './cadastro.css';
 import { useNavigate } from 'react-router-dom';
-import { registerUser, queryUser, setToken } from '../../Services/Auth';
-import type { IdentifierType } from '../../Services/Auth';
+import { register,login, queryUser, setToken, IdentifierType } from '../../Services/Auth'; // Atualizado: 'register' em vez de 'registerUser'; removi type { } desnecessário no import do type
 
 type AuthMethod = 'email' | 'phone';
 
@@ -81,44 +80,43 @@ export default function Cadastro({ onBackClick }: CadastroProps) {
     setErrors({});
 
     try {
-      const payload: any = {
+      const identifier = authMethod === 'email' ? formData.email.trim() : formData.phone.trim();
+      const identifierType: IdentifierType = authMethod === 'email' ? IdentifierType.EMAIL : IdentifierType.TELEFONE; // Atualizado: Use IdentifierType.EMAIL / .TELEFONE
+
+      // Verificar se o usuário já existe ANTES do register
+      const exists = await queryUser(identifier, identifierType);
+      if (exists) {
+        throw new Error('Usuário já existe com esse email/telefone.');
+      }
+
+      const payload = {
         nome: formData.name.trim(),
         senha: formData.password,
+        [authMethod]: identifier, // Dinâmico: email ou telefone
       };
 
-      if (authMethod === 'email' && formData.email.trim()) {
-        payload.email = formData.email.trim();
-      }
-      if (authMethod === 'phone' && formData.phone.trim()) {
-        // enviar telefone apenas com dígitos e opcional +
-        const cleaned = formData.phone.replace(/[^+\d]/g, '');
-        payload.telefone = cleaned;
-      }
+      // Chamar register e capturar resposta (inclui token e user)
+      const registerResponse = await register(payload);
 
-      // Call backend register
-      await registerUser(payload);
-
-      // Try to log in automatically after register
-      const identifier = authMethod === 'email' ? formData.email : formData.phone;
-      const identifierType: IdentifierType = authMethod === 'email' ? 'email' : 'telefone';
-
-      const loginResult = await queryUser({ identifier, identifierType, senha: formData.password });
-
-      if (loginResult && loginResult.token) {
-        setToken(loginResult.token);
-        // navigate to dashboard
-        navigate('/dashboard');
+      if (registerResponse.token) {
+        setToken(registerResponse.token);
+        setSuccess(true);
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
         return;
       }
 
-      // If backend didn't return token on register, show success and navigate to login/back
-      setSuccess(true);
-      setFormData({ name: '', email: '', phone: '', password: '' });
-      setTimeout(() => {
-        setSuccess(false);
-        if (onBackClick) onBackClick();
-        else navigate('/login');
-      }, 2500);
+      
+      const user = await login(identifier, formData.password);
+      if (user) {
+        setSuccess(true);
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
+      } else {
+        throw new Error('Cadastro realizado, mas login falhou.');
+      }
     } catch (err: any) {
       console.error('Cadastro error', err);
       const message = err?.message || 'Erro ao criar conta. Tente novamente.';
