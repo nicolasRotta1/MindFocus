@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, Mail, Phone, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { queryUser, setToken } from '../../lib/Auth';
-import type { IdentifierType } from '../../lib/Auth';
+import { queryUser, setToken } from '../../Services/Auth';
+import type { IdentifierType } from '../../Services/Auth';
 import './Login.css';
 
 export default function Login() {

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Brain, Mail, Phone, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import './cadastro.css';
 import { useNavigate } from 'react-router-dom';
-import { registerUser, queryUser, setToken } from '../../lib/Auth';
-import type { IdentifierType } from '../../lib/Auth';
+import { registerUser, queryUser, setToken } from '../../Services/Auth';
+import type { IdentifierType } from '../../Services/Auth';
 
 type AuthMethod = 'email' | 'phone';
 

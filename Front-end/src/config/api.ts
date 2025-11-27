@@ -1,20 +1,19 @@
-import axios, { AxiosHeaders } from 'axios';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: `${API_BASE_URL}/api/auth/login`,
-    REGISTER: `${API_BASE_URL}/api/auth/register`,
-    LOGOUT: `${API_BASE_URL}/api/auth/logout`,
+    LOGIN: `/api/auth/login`,
+    REGISTER: `/api/auth/register`,
+    LOGOUT: `/api/auth/logout`,
   },
   USUARIO: {
-    BASE: `${API_BASE_URL}/api/usuarios`,
-    ATUAL: `${API_BASE_URL}/api/usuarios/atual`,
+    ATUAL: `/api/usuarios/atual`,
   },
   HABITO: {
-    BASE: `${API_BASE_URL}/api/habitos`,
-    CONCLUDE: (id: number) => `${API_BASE_URL}/api/habitos/${id}/concluir`,
+    BASE: `/api/habitos`,
+    CONCLUDE: (id: number) => `/api/habitos/${id}/concluir`,
   },
 };
 
@@ -23,16 +22,31 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // Add timeout for better UX
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers = AxiosHeaders.from(config.headers);
-    config.headers.set('Authorization', `Bearer ${token}`);
+// Request Interceptor: Add token
+api.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = localStorage.getItem('authToken');
+    if (token && config.headers) {
+      config.headers.set('Authorization', `Bearer ${token}`);
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response Interceptor: Handle global errors (e.g., 401)
+api.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('authToken');
+      // Optionally redirect to login or emit an event
+    }
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-
-export default API_BASE_URL;
+export default api;

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/Login/Login';
 import Dashboard from '../pages/Dashboard/dashboard';
-import { getToken } from '../lib/Auth';
+import { getToken } from '../Services/Auth';
 import React from 'react';
 import LandingPage from '../pages/LandingPage/landingPage';
 import Cadastro from '../pages/Cadastro/cadastro';
