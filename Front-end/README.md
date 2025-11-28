@@ -11,7 +11,7 @@ Interface web do sistema MindFocus, permitindo que o usuário:
 
 ---
 
-# 🧪 Tecnologias Utilizadas
+#  Tecnologias Utilizadas
 
 * React
 * Vite
@@ -22,7 +22,7 @@ Interface web do sistema MindFocus, permitindo que o usuário:
 
 ---
 
-# 📦 Instalação e execução local
+# Instalação e execução local
 
 ```bash
 cd frontend
@@ -38,7 +38,7 @@ http://localhost:5173
 
 ---
 
-# 🔧 Configuração de ambiente
+# Configuração de ambiente
 
 No frontend deve existir um arquivo:
 
@@ -53,7 +53,7 @@ export const API_URL = "http://localhost:8080";
 ```
 ---
 
-# 🔐 Autenticação
+# Autenticação
 
 * login gera um JWT
 * token é armazenado em localStorage
@@ -65,7 +65,7 @@ Authorization: `Bearer ${token}`
 
 ---
 
-# 📁 Estrutura de Pastas
+# Estrutura de Pastas
 
 ```
 Front-end/
