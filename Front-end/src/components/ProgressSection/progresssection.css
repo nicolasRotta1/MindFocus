@@ -1,0 +1,127 @@
+.mf-progress {
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.mf-progress h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.mf-small {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.mf-streak-area {
+  margin-bottom: 2rem;
+}
+
+.mf-streak-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mf-streak-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mf-streak-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.mf-streak-circle.done {
+  background: #10b981;
+  color: #fff;
+}
+
+.mf-streak-circle.miss {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+.mf-weekly-chart {
+  margin-top: 1rem;
+}
+
+.mf-bars-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 8rem;
+}
+
+.mf-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.mf-bar-bg {
+  width: 100%;
+  height: 100%;
+  background: #f3f4f6;
+  border-radius: 0.5rem 0.5rem 0 0;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.mf-bar-fill {
+  width: 100%;
+  background: linear-gradient(to top, #3b82f6, #60a5fa);
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  transition: height 0.3s ease;
+}
+
+.mf-month-progress {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #eff6ff;
+  border-radius: 0.5rem;
+}
+
+.mf-month-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mf-month-percent {
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #2563eb;
+}
+
+.mf-month-bar {
+  margin-top: 0.75rem;
+  width: 100%;
+  background: #dbeafe;
+  border-radius: 9999px;
+  height: 0.5rem;
+  overflow: hidden;
+}
+
+.mf-month-fill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 9999px;
+}

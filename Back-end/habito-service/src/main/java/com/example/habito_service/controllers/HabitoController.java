@@ -98,12 +98,4 @@ public class HabitoController {
         habitoService.deletarHabito(id);
     }
 
-    // ============================
-    // Marcar hábito como concluído
-    // ============================
-    @PostMapping("/{id}/concluir")
-    public ResponseEntity<HabitoResponse> concluirHabito(@PathVariable UUID id) {
-        HabitoResponse habito = habitoService.concluirHabito(id);
-        return ResponseEntity.ok(habito);
-    }
 }

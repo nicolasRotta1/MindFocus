@@ -1,0 +1,90 @@
+.motivation {
+  padding-top: 5rem;   
+  padding-bottom: 5rem;
+  padding-left: 1rem;  
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .motivation {
+    padding-left: 1.5rem;  
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .motivation {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.motivation-container {
+  max-width: 56rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.motivation-box {
+  background-image: linear-gradient(to right, #2563eb, #16a34a);
+  border-radius: 1.5rem;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 30px 40px rgba(0,0,0,0.25);
+}
+
+.motivation-icon-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.motivation-icon-bg {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 0.75rem;
+}
+
+.motivation-icon {
+  width: 2rem;
+  height: 2rem;
+  color: white;
+}
+
+.motivation-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .motivation-title {
+    font-size: 2.25rem;
+  }
+}
+
+.motivation-subtitle {
+  font-size: 1.125rem;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 2rem;
+}
+
+.motivation-button {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #2563eb;
+  background-color: white;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 10px 16px rgba(0,0,0,0.12);
+  transition: all 0.2s ease;
+}
+
+.motivation-button:hover {
+  background-color: #f9fafb;
+  transform: scale(1.05);
+  box-shadow: 0 15px 22px rgba(0,0,0,0.18);
+}

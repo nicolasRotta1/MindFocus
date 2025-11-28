@@ -1,0 +1,36 @@
+import { Home, Target, TrendingUp, Calendar, User, LogOut } from 'lucide-react';
+import './sidebar.css';
+import { logout } from '../../Services/Auth';
+
+export default function Sidebar() {
+  return (
+    <aside className="mf-sidebar">
+      <div className="mf-sidebar-top">
+        <h1 className="mf-logo">MindFocus</h1>
+        <p className="mf-sub">Gerencie seus hábitos</p>
+      </div>
+
+      <nav className="mf-nav">
+        <a href="#" className="mf-nav-item active"><Home size={20} /> <span>Dashboard</span></a>
+        <a href="#" className="mf-nav-item"><Target size={20} /> <span>Meus Hábitos</span></a>
+        <a href="#" className="mf-nav-item"><TrendingUp size={20} /> <span>Progresso / Insights</span></a>
+        <a href="#" className="mf-nav-item"><Calendar size={20} /> <span>Rotina</span></a>
+        <a href="#" className="mf-nav-item"><User size={20} /> <span>Perfil</span></a>
+      </nav>
+
+      <div className="mf-sidebar-bottom">
+        <button 
+  className="mf-logout"
+  onClick={async () => {
+    await logout();
+    window.location.href = '/login';
+  }}
+>
+  <LogOut size={20} /> 
+  <span>Sair</span>
+</button>
+
+      </div>
+    </aside>
+  );
+}

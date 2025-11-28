@@ -1,5 +1,7 @@
 package com.example.habito_service.services;
 
+import com.example.habito_service.RabbitMQ.HabitoProducer;
+import com.example.habito_service.dto.HabitoEvent;
 import com.example.habito_service.dto.HabitoRequest;
 import com.example.habito_service.dto.HabitoResponse;
 import com.example.habito_service.enums.FrequenciaHabito;
@@ -23,10 +25,14 @@ public class HabitoService {
 
     private final HabitoRepository habitoRepository;
     private final UsuarioService usuarioService;
+    private final HabitoProducer habitoProducer; // ← injetando producer
 
-    public HabitoService(HabitoRepository habitoRepository, UsuarioService usuarioService) {
+    public HabitoService(HabitoRepository habitoRepository,
+                         UsuarioService usuarioService,
+                         HabitoProducer habitoProducer) {
         this.habitoRepository = habitoRepository;
         this.usuarioService = usuarioService;
+        this.habitoProducer = habitoProducer;
     }
 
     // ============================
@@ -40,9 +46,20 @@ public class HabitoService {
         habito.setAtualizadoEm(LocalDateTime.now());
 
         Habito salvo = habitoRepository.save(habito);
+
+        // Criar evento
+        HabitoEvent event = new HabitoEvent(salvo.getId(), salvo.getNome(), usuario.getId(),
+                "CRIADO", LocalDateTime.now());
+
+        habitoProducer.enviarHabitoCriado(event);
+        habitoProducer.enviarNotificacao(event);
+
         return HabitoResponse.fromEntity(salvo);
     }
 
+    // ============================
+    // Listar hábitos do usuário com filtros
+    // ============================
     public List<HabitoResponse> listarHabitosDoUsuario(
             String nome,
             TipoHabito tipo,
@@ -57,15 +74,9 @@ public class HabitoService {
         UUID usuarioId = usuarioService.buscarUsuarioLogado().getId();
 
         Specification<Habito> spec = HabitoSpecification.comFiltros(
-                nome,
-                tipo,
-                status,
-                frequencia,
-                concluido,
-                criadoEmInicio,
-                criadoEmFim,
-                atualizadoEmInicio,
-                atualizadoEmFim,
+                nome, tipo, status, frequencia, concluido,
+                criadoEmInicio, criadoEmFim,
+                atualizadoEmInicio, atualizadoEmFim,
                 usuarioId
         );
 
@@ -75,22 +86,18 @@ public class HabitoService {
                 .collect(Collectors.toList());
     }
 
-
-
     // ============================
-    // Buscar hábito por ID (verifica propriedade)
+    // Buscar hábito por ID
     // ============================
     public Habito buscarPorId(UUID id) {
-        Usuario usuario = usuarioService.buscarUsuarioLogado();
+        UUID usuarioId = usuarioService.buscarUsuarioLogado().getId();
 
-        Habito habito = habitoRepository.findByIdAndUsuarioId(id, usuario.getId())
+        return habitoRepository.findByIdAndUsuarioId(id, usuarioId)
                 .orElseThrow(() -> new HabitoNotFoundException("Hábito não encontrado para este usuário"));
-
-        return habito;
     }
 
     // ============================
-    // Atualizar hábito (parcial / PATCH)
+    // Atualizar hábito
     // ============================
     @Transactional
     public HabitoResponse atualizarHabito(UUID id, HabitoRequest dto) {
@@ -121,6 +128,17 @@ public class HabitoService {
 
         habitoExistente.setAtualizadoEm(LocalDateTime.now());
 
+        // Criar evento de atualização
+        HabitoEvent event = new HabitoEvent(
+                habitoExistente.getId(),
+                habitoExistente.getNome(),
+                habitoExistente.getUsuario().getId(),
+                "ATUALIZADO",
+                LocalDateTime.now()
+        );
+        habitoProducer.enviarHabitoCriado(event);
+        habitoProducer.enviarNotificacao(event);
+
         return HabitoResponse.fromEntity(habitoExistente);
     }
 
@@ -130,21 +148,19 @@ public class HabitoService {
     public void deletarHabito(UUID id) {
         Habito habito = buscarPorId(id);
         habitoRepository.delete(habito);
+
+        // Criar evento de deleção
+        HabitoEvent event = new HabitoEvent(
+                habito.getId(),
+                habito.getNome(),
+                habito.getUsuario().getId(),
+                "DELETADO",
+                LocalDateTime.now()
+        );
+        habitoProducer.enviarHabitoCriado(event); // ou criar "enviarHabitoDeletado"
+        habitoProducer.enviarNotificacao(event);
     }
 
-    // ============================
-    // Marcar hábito como concluído
-    // ============================
-    @Transactional
-    public HabitoResponse concluirHabito(UUID id) {
-        Habito habito = buscarPorId(id);
-        habito.setConcluido(true);
-        habito.setStatus(StatusHabito.CONCLUIDO);
-        habito.setProgresso(100);
-        habito.setAtualizadoEm(LocalDateTime.now());
-
-        return HabitoResponse.fromEntity(habito);
-    }
 
     // ============================
     // Exceções personalizadas

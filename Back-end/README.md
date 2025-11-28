@@ -1,260 +1,336 @@
-# 📚 Back-end - MindFocus
+# README — API (Back-end) MindFocus
 
-Documentação completa do back-end do projeto MindFocus.
-
----
-
-## 📁 Estrutura do Projeto
-
-O back-end é composto por **2 serviços Spring Boot**:
-
-### **habito-service** (Porta 8080)
+## Base URL
 
 ```
-com.example.habito_service/
-├── config/
-│   ├── RabbitConfig.java
-│   └── SecurityConfig.java
-├── controllers/
-│   ├── AuthController.java
-│   └── HabitoController.java
-├── dto/
-│   ├── AuthResponse.java
-│   ├── HabitoRequest.java
-│   ├── LoginRequest.java
-│   └── RegisterRequest.java
-├── enums/
-│   ├── FrequenciaHabito.java
-│   ├── StatusHabito.java
-│   └── TipoHabito.java
-├── models/
-│   ├── Habito.java
-│   └── Usuario.java
-├── RabbitMQ/
-│   └── HabitoProducer.java
-├── repositories/
-│   ├── HabitoRepository.java
-│   └── UsuarioRepository.java
-├── security/
-│   ├── CustomUserDetailsService.java
-│   ├── SecurityFilter.java
-│   ├── TokenBlacklistService.java
-│   └── TokenService.java
-├── services/
-│   ├── AuthService.java
-│   ├── HabitoService.java
-│   └── UsuarioService.java
-└── specification/
-    └── HabitoSpecification.java
-```
-
-### **notification-service** (Porta 8090)
-
-```
-com.example.notification_service/
-├── config/
-│   └── RabbitConfig.java
-├── controllers/
-│   └── HealthController.java
-├── dto/
-│   └── HabitoRequest.java
-├── RabbitMQ/
-│   └── HabitoConsumer.java
-├── services/
-│   └── NotificationService.java
-└── utils/
-    └── MailSender.java
+http://localhost:8080
 ```
 
 ---
 
-## ✅ Estrutura Padronizada
+# Autenticação (`/api/auth`)
 
-A estrutura está **100% padronizada** seguindo as convenções Java/Spring Boot:
+### ▶ Registro
 
-- ✅ **Nomenclatura consistente** - Todos os pacotes em minúsculo
-- ✅ **Separação de camadas** - Controller, Service, Repository, Model
-- ✅ **Organização por funcionalidade** - Security, RabbitMQ, Config isolados
-- ✅ **DTOs separados** - Objetos de transferência isolados
-- ✅ **Enums organizados** - Tipos e status em pacote próprio
-
-### Convenções Seguidas
-
-- ✅ **Minúsculas** - Todos os pacotes em minúsculo
-- ✅ **Singular para conceitos** - `dto`, `model`, `enum`
-- ✅ **Plural para coleções** - `controllers`, `services`, `repositories`
-
----
-
-## 🎯 Conformidade com Requisitos do Trabalho
-
-### Back-end
-
-| Requisito | Status | Observação |
-|-----------|--------|------------|
-| **Spring Boot** | ✅ | Versão 3.5.7 configurada |
-| **API REST (GET/POST/PUT/DELETE)** | ✅ | Controllers implementados |
-| **Banco relacional (MySQL)** | ✅ | Configurado |
-| **Camadas organizadas** | ✅ | Estrutura perfeita |
-
-### Mensageria (RabbitMQ)
-
-| Requisito | Status | Observação |
-|-----------|--------|------------|
-| **RabbitMQ obrigatório** | ✅ | Dependência adicionada |
-| **2 serviços separados** | ✅ | habito-service e notification-service |
-| **Produção de mensagens** | ✅ | HabitoProducer implementado |
-| **Consumo de mensagens** | ✅ | HabitoConsumer implementado |
-| **Fluxo de negócio real** | ✅ | Implementado |
-
-**Fluxo:**
-- `habito-service` → produz mensagem quando hábito é criado
-- `notification-service` → consome mensagem e envia notificação
-
----
-
-## 🔒 Segurança
-
-### Implementações
-
-- ✅ **Spring Security** configurado
-- ✅ **JWT (JSON Web Tokens)** para autenticação
-- ✅ **SecurityFilter** para validação de tokens
-- ✅ **CustomUserDetailsService** para autenticação
-- ✅ **TokenService** para geração/validação
-- ✅ **Endpoints públicos** vs protegidos
-
-### Configurações
-
-- ✅ Endpoints públicos: `/auth/**`
-- ✅ Endpoints protegidos: Requerem JWT válido
-- ✅ CORS configurado (se necessário)
-
----
-
-## 🗄️ Banco de Dados
-
-### MySQL
-
-- **Host:** `localhost` (desenvolvimento) / `mysql` (Docker)
-- **Porta:** `3306`
-- **Database:** `mindfocus`
-- **Usuário:** `root`
-- **Senha:** `admin` (desenvolvimento)
-
-### Configuração
-
-- ✅ JPA/Hibernate configurado
-- ✅ DDL auto: `update` (cria/atualiza tabelas automaticamente)
-- ✅ Dialeto: MySQL8Dialect
-
----
-
-## 🐰 RabbitMQ
-
-### Configuração
-
-- **Host:** `localhost` (desenvolvimento) / `rabbitmq` (Docker)
-- **Porta:** `5672`
-- **Management UI:** `15672`
-- **Usuário:** `guest`
-- **Senha:** `guest`
-
-### Fluxo de Mensageria
-
-1. **habito-service** cria um hábito
-2. **HabitoProducer** envia mensagem para a exchange `habitoExchange`
-3. **notification-service** consome a mensagem da queue `habitoCriadoQueue`
-4. **NotificationService** processa e envia notificação
-
----
-
-## 📦 Dependências Principais
-
-### habito-service
-
-- Spring Boot 3.5.7
-- Spring Data JPA
-- Spring Security
-- Spring AMQP (RabbitMQ)
-- MySQL Connector
-- JWT (Auth0)
-- Spring Boot Actuator
-
-### notification-service
-
-- Spring Boot 3.5.7
-- Spring AMQP (RabbitMQ)
-- Spring Mail
-- Spring Boot Actuator
-
----
-
-## 🚀 Como Executar
-
-### Desenvolvimento Local
-
-```bash
-# habito-service
-cd Back-end/habito-service
-./mvnw spring-boot:run
-
-# notification-service
-cd Back-end/notification-service
-./mvnw spring-boot:run
+```
+POST /api/auth/register
 ```
 
-### Docker
+**Body**
 
-```bash
-cd infra
-docker-compose up -d
+```json
+{
+  "nome": "Usuario Teste",
+  "email": "teste@exemplo.com",
+  "senha": "123456"
+}
+```
+
+**Response**
+
+```json
+{
+  "token": "jwt-token...",
+  "tipo": "Bearer"
+}
 ```
 
 ---
 
-## 📝 Profiles
+### ▶ Login
 
-### Desenvolvimento
+```
+POST /api/auth/login
+```
 
-- `application.properties` - Configurações locais
+**Body**
 
-### Docker
+```json
+{
+  "email": "teste@exemplo.com",
+  "senha": "123456"
+}
+```
 
-- `application-docker.properties` - Configurações para containers
-- Usa variáveis de ambiente do docker-compose
+**Response**
 
----
-
-## 🔧 Configurações
-
-### application.properties
-
-- Porta do servidor
-- Configuração do banco de dados
-- Configuração do RabbitMQ
-- Configuração JWT
-- Logging
-
-### application-docker.properties
-
-- Mesmas configurações, mas usando nomes de serviços Docker
-- Variáveis de ambiente suportadas
+```json
+{
+  "token": "jwt-token...",
+  "tipo": "Bearer"
+}
+```
 
 ---
 
-## ✅ Status da Arquitetura
+### ▶ Logout
 
-**Estrutura:** ✅ **EXCELENTE**
+```
+POST /api/auth/logout
+Authorization: Bearer <token>
+```
 
-- ✅ Organização clara e profissional
-- ✅ Separação de responsabilidades bem feita
-- ✅ Segue padrões Spring Boot
-- ✅ Fácil de navegar e entender
-- ✅ Escalável e manutenível
-- ✅ Conforme requisitos do trabalho
+**Response**
+
+```json
+"Logout realizado com sucesso."
+```
 
 ---
 
-**Desenvolvido para o projeto MindFocus** 🚀
+# Usuários (`/api/usuarios`)
 
+### ▶ Buscar usuário logado
+
+```
+GET /api/usuarios/atual
+Authorization: Bearer <token>
+```
+
+---
+
+### ▶ Atualizar informações do usuário
+
+```
+PUT /api/usuarios/atual
+Authorization: Bearer <token>
+```
+
+**Body**
+
+```json
+{
+  "nome": "Novo Nome",
+  "email": "email@exemplo.com"
+}
+```
+
+---
+
+### ▶ Remover usuário
+
+```
+DELETE /api/usuarios/atual
+Authorization: Bearer <token>
+```
+
+---
+
+# Hábitos (`/api/habitos`)
+
+### ▶ Criar hábito
+
+```
+POST /api/habitos
+Authorization: Bearer <token>
+```
+
+**Body**
+
+```json
+{
+  "nome": "Ler livros",
+  "descricao": "Ler 30 minutos",
+  "categoria": "Estudo"
+}
+```
+
+---
+
+### ▶ Listar hábitos do usuário
+
+```
+GET /api/habitos
+Authorization: Bearer <token>
+```
+
+---
+
+### ▶ Editar hábito
+
+```
+PUT /api/habitos/{id}
+Authorization: Bearer <token>
+```
+
+**Body**
+
+```json
+{
+  "nome": "Novo nome",
+  "descricao": "Nova descrição",
+  "categoria": "Saúde"
+}
+```
+
+---
+
+### ▶ Deletar hábito
+
+```
+DELETE /api/habitos/{id}
+Authorization: Bearer <token>
+```
+
+---
+
+Perfeito! Agora que você enviou o **código real do controller**, vou corrigir o README da API para refletir exatamente os endpoints reais do sistema.
+
+Aqui está a **seção revisada de Hábitos Concluídos**, em Markdown para colar no GitHub:
+
+---
+
+# Hábitos Concluídos (`/api/habitos`)
+
+---
+
+## Concluir hábito hoje
+
+```
+POST /api/habitos/{habitoId}/concluir
+Authorization: Bearer <token>
+```
+
+**Response**
+
+```json
+{
+  "mensagem": "Hábito marcado como concluído hoje com sucesso!",
+  "conclusaoId": "uuid",
+  "habitoId": "uuid",
+  "data": "2025-01-20"
+}
+```
+
+---
+
+## Verificar se hábito foi concluído hoje
+
+```
+GET /api/habitos/{habitoId}/concluido-hoje
+Authorization: Bearer <token>
+```
+
+**Response**
+
+```json
+{
+  "concluidoHoje": true
+}
+```
+
+---
+
+## Estatísticas do hábito
+
+```
+GET /api/habitos/{habitoId}/stats
+Authorization: Bearer <token>
+```
+
+**Response (exemplo)**
+
+```json
+{
+  "totalConclusoes": 42,
+  "diasSeguidos": 7,
+  "melhorSequencia": 14
+}
+```
+---
+
+## Histórico de conclusão por período
+
+```
+GET /api/habitos/{habitoId}/historico?de=2025-01-01&ate=2025-01-31
+Authorization: Bearer <token>
+```
+
+**Response**
+
+```json
+{
+  "habitoId": "uuid-do-habito",
+  "periodo": {
+    "de": "2025-01-01",
+    "ate": "2025-01-31"
+  },
+  "datasConcluidas": [
+    "2025-01-01",
+    "2025-01-03",
+    "2025-01-04",
+    "2025-01-10"
+  ]
+}
+```
+
+---
+
+# Dashboard (estatísticas globais)
+
+```
+GET /api/habitos/dashboard/overview
+Authorization: Bearer <token>
+```
+
+**Response**
+
+```json
+{
+  "totalHabitos": 19,
+  "dataConsulta": "2025-01-20"
+}
+```
+
+# Autorização / JWT
+
+Toda requisição autenticada deve enviar:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+# ⚠ Códigos de Resposta
+
+| Código | Descrição                       |
+| ------ | ------------------------------- |
+| 200    | OK                              |
+| 201    | Criado                          |
+| 400    | Erro de requisição              |
+| 401    | Não autorizado (token inválido) |
+| 404    | Não encontrado                  |
+| 500    | Erro interno                    |
+
+---
+
+# Variáveis de Ambiente (Back-end)
+
+```
+DATABASE_URL=
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+JWT_SECRET=
+JWT_ISSUER=
+RABBITMQ_HOST=
+RABBITMQ_PORT=
+RABBITMQ_USERNAME=
+RABBITMQ_PASSWORD=
+```
+
+---
+
+# Integração com RabbitMQ
+
+Ao concluir um hábito, um evento JSON é enviado:
+
+```json
+{
+  "idHabito": "uuid",
+  "idUsuario": "uuid",
+  "dataConclusao": "2025-01-20"
+}
+```
+
+O `notification-service` recebe esse evento e envia notificações.

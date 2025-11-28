@@ -35,8 +35,6 @@ public class HabitoResponse {
 
 
     // Getters e Setters
-
-
     public UUID getId() {
         return id;
     }
