@@ -1,6 +1,6 @@
-# 📌 README — API (Back-end) MindFocus
+# README — API (Back-end) MindFocus
 
-## 🔗 Base URL
+## Base URL
 
 ```
 http://localhost:8080
@@ -8,7 +8,7 @@ http://localhost:8080
 
 ---
 
-# 🟦 Autenticação (`/api/auth`)
+# Autenticação (`/api/auth`)
 
 ### ▶ Registro
 
@@ -78,7 +78,7 @@ Authorization: Bearer <token>
 
 ---
 
-# 👤 Usuários (`/api/usuarios`)
+# Usuários (`/api/usuarios`)
 
 ### ▶ Buscar usuário logado
 
@@ -116,7 +116,7 @@ Authorization: Bearer <token>
 
 ---
 
-# 🟩 Hábitos (`/api/habitos`)
+# Hábitos (`/api/habitos`)
 
 ### ▶ Criar hábito
 
@@ -180,11 +180,11 @@ Aqui está a **seção revisada de Hábitos Concluídos**, em Markdown para cola
 
 ---
 
-# 🟨 Hábitos Concluídos (`/api/habitos`)
+# Hábitos Concluídos (`/api/habitos`)
 
 ---
 
-## ✅ Concluir hábito hoje
+## Concluir hábito hoje
 
 ```
 POST /api/habitos/{habitoId}/concluir
@@ -204,7 +204,7 @@ Authorization: Bearer <token>
 
 ---
 
-## ⏳ Verificar se hábito foi concluído hoje
+## Verificar se hábito foi concluído hoje
 
 ```
 GET /api/habitos/{habitoId}/concluido-hoje
@@ -221,7 +221,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 📊 Estatísticas do hábito
+## Estatísticas do hábito
 
 ```
 GET /api/habitos/{habitoId}/stats
@@ -239,7 +239,7 @@ Authorization: Bearer <token>
 ```
 ---
 
-## 📆 Histórico de conclusão por período
+## Histórico de conclusão por período
 
 ```
 GET /api/habitos/{habitoId}/historico?de=2025-01-01&ate=2025-01-31
@@ -266,7 +266,7 @@ Authorization: Bearer <token>
 
 ---
 
-# 🧠 Dashboard (estatísticas globais)
+# Dashboard (estatísticas globais)
 
 ```
 GET /api/habitos/dashboard/overview
@@ -282,7 +282,7 @@ Authorization: Bearer <token>
 }
 ```
 
-# 🔐 Autorização / JWT
+# Autorização / JWT
 
 Toda requisição autenticada deve enviar:
 
@@ -305,7 +305,7 @@ Authorization: Bearer <token>
 
 ---
 
-# 🔧 Variáveis de Ambiente (Back-end)
+# Variáveis de Ambiente (Back-end)
 
 ```
 DATABASE_URL=
@@ -321,7 +321,7 @@ RABBITMQ_PASSWORD=
 
 ---
 
-# 🐇 Integração com RabbitMQ
+# Integração com RabbitMQ
 
 Ao concluir um hábito, um evento JSON é enviado:
 
