@@ -66,6 +66,7 @@
 
     <build>
         <plugins>
+            <!-- CORREÇÃO DE ENCODING PARA RECURSOS -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -73,7 +74,7 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-
+            <!-- CORREÇÃO DE ENCODING PARA COMPILADOR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
