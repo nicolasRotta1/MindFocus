@@ -24,3 +24,25 @@ export interface HabitResponse {
   atualizadoEm: string; 
   notificacaoAtiva?: boolean; 
 }
+
+export interface HabitStats {
+  habitoId?: string;
+  totalConcluido?: number;
+  concluidoHoje?: boolean;
+  streakAtual?: number;
+  concluidosEsteMes?: number;
+  historico?: string[]; 
+  dataConsulta?: string;
+}
+
+export interface DashboardUsuario {
+  usuarioId?: string;
+  totalHabitos: number;
+  concluidosHoje: number;
+  concluidosSemana?: number;
+  percentualHoje?: number;
+  dataConsulta?: string;
+  completedDays?: boolean[];
+  weeklyStats?: number[];
+  monthProgress?: number;
+}

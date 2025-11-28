@@ -14,6 +14,12 @@ export const API_ENDPOINTS = {
   HABITO: {
     BASE: `/api/habitos`,
     CONCLUDE: (id: number | string) => `/api/habitos/${id}/concluir`,
+    STATS: (id: number | string) => `/api/habitos/${id}/stats`,
+    COMPLETED_TODAY: (id: number | string) => `/api/habitos/${id}/concluido-hoje`,
+    HISTORY: (id: number | string, de: string, ate: string) =>
+      `/api/habitos/${id}/historico?de=${de}&ate=${ate}`,
+    DASHBOARD_USER: `/api/habitos/dashboard/usuario`,
+    OVERVIEW: `/api/habitos/dashboard/overview`,
   },
 };
 

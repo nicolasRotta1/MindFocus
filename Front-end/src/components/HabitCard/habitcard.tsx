@@ -9,10 +9,34 @@ import './habitcard.css';
 import type { HabitResponse, HabitType, HabitFrequency, HabitStatus } from '../../Types';
 
 interface Props extends HabitResponse {
-  onConclude?: (id: number) => Promise<void>;
+  streak?: number;
+  totalConcluidos?: number;
+  concluidoHoje?: boolean;
+  onConclude?: (id: number | string) => Promise<void>;
   onEdit?: (habit: HabitResponse) => void;
-  onPause?: (id: number) => Promise<void>;
-  onDelete?: (id: number) => Promise<void>;
+  onPause?: (id: number | string) => Promise<void>;
+  onDelete?: (id: number | string) => Promise<void>;
+}
+
+function formatDate(d?: string | null): string {
+  if (!d) return '-';
+
+  // tenta parsear diretamente
+  let date = new Date(d);
+  if (!isNaN(date.getTime())) {
+    return date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+  }
+
+  date = new Date(d + 'Z');
+  if (!isNaN(date.getTime())) {
+    return date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+  }
+
+  if (d.length >= 10) {
+    return d.substring(0, 10).split('-').reverse().join('/');
+  }
+
+  return '-';
 }
 
 const typeMap: Record<
@@ -25,7 +49,7 @@ const typeMap: Record<
 
 const statusColor: Record<HabitStatus, string> = {
   PENDENTE: 'mf-status-green',
-  CONCLUIDO: 'mf-status-blue',
+  CONCLUIDO: 'mf-status-green',
   ATRASADO: 'mf-status-gray',
 };
 
@@ -43,6 +67,9 @@ export default function HabitCard(props: Props) {
     frequencia,
     status = 'PENDENTE',
     criadoEm,
+    streak = 0,
+    totalConcluidos = 0,
+    concluidoHoje = false,
     onConclude,
     onEdit,
     onPause,
@@ -50,9 +77,8 @@ export default function HabitCard(props: Props) {
   } = props;
 
   const { className: typeClass, Icon } = typeMap[tipo];
-  const createdAtText = criadoEm
-    ? new Date(criadoEm).toLocaleDateString()
-    : '-';
+
+  const createdAtText = formatDate(criadoEm);
 
   return (
     <article className="mf-card">
@@ -79,6 +105,12 @@ export default function HabitCard(props: Props) {
             <span className="mf-start-text">
               Desde {createdAtText}
             </span>
+          </div>
+
+          <div className="mf-habit-stats">
+            <small>Streak: {streak} dias</small>
+            <small>Total: {totalConcluidos}</small>
+            <small>{concluidoHoje ? '✅ Concluído hoje' : '— Ainda não'}</small>
           </div>
         </div>
       </div>

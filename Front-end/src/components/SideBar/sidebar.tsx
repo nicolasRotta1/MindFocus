@@ -1,5 +1,6 @@
 import { Home, Target, TrendingUp, Calendar, User, LogOut } from 'lucide-react';
 import './sidebar.css';
+import { logout } from '../../Services/Auth';
 
 export default function Sidebar() {
   return (
@@ -18,7 +19,17 @@ export default function Sidebar() {
       </nav>
 
       <div className="mf-sidebar-bottom">
-        <button className="mf-logout"><LogOut size={20} /> <span>Sair</span></button>
+        <button 
+  className="mf-logout"
+  onClick={async () => {
+    await logout();
+    window.location.href = '/login';
+  }}
+>
+  <LogOut size={20} /> 
+  <span>Sair</span>
+</button>
+
       </div>
     </aside>
   );

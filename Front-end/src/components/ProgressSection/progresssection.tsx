@@ -1,9 +1,15 @@
 import './progresssection.css';
 
-export default function ProgressSection() {
+export default function ProgressSection({
+  completedDays = [false, false, false, false, false, false, false],
+  weeklyStats = [0, 0, 0, 0, 0, 0, 0],
+  monthProgress = 0,
+}: {
+  completedDays?: boolean[];
+  weeklyStats?: number[];
+  monthProgress?: number;
+}) {
   const weekDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-  const completedDays = [true, true, true, false, true, true, true];
-  const weeklyStats = [8, 6, 9, 7, 10, 8, 9];
 
   return (
     <section className="mf-progress">
@@ -21,15 +27,16 @@ export default function ProgressSection() {
         </div>
       </div>
 
-      <div className="mf-weekly-chart">
-        <p className="mf-small">Hábitos concluídos na semana</p>
-        <div className="mf-bars-row">
-          {weeklyStats.map((v, i) => {
-            const h = Math.round((v / 10) * 100);
+    <div className="mf-weekly-chart">
+      <p className="mf-small">Hábitos concluídos na semana</p>
+      <div className="mf-bars-row">
+        {weeklyStats.map((v, i) => {
+        const max = Math.max(...weeklyStats, 1); 
+        const percent = Math.round((v / max) * 100);
             return (
               <div key={i} className="mf-bar-col">
                 <div className="mf-bar-bg">
-                  <div className="mf-bar-fill" style={{ height: `${h}%` }} />
+                  <div className="mf-bar-fill" style={{ height: `${percent}%` }} />
                 </div>
                 <span className="mf-small">{weekDays[i]}</span>
               </div>
@@ -41,10 +48,10 @@ export default function ProgressSection() {
       <div className="mf-month-progress">
         <div className="mf-month-row">
           <span className="mf-small">Progresso geral do mês</span>
-          <span className="mf-month-percent">85%</span>
+          <span className="mf-month-percent">{monthProgress}%</span>
         </div>
         <div className="mf-month-bar">
-          <div className="mf-month-fill" style={{ width: '85%' }} />
+          <div className="mf-month-fill" style={{ width: `${monthProgress}%` }} />
         </div>
       </div>
     </section>

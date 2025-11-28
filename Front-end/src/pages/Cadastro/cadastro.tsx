@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Eye, EyeOff, ArrowLeft, Mail, Phone } from 'lucide-react';
 import { register } from '../../Services/Auth';
 import { useNavigate } from 'react-router-dom';
-import './Cadastro.css';
+import './cadastro.css';
 
 function Cadastro() {
   const navigate = useNavigate();

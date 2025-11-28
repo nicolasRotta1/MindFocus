@@ -1,5 +1,13 @@
 import './dashboard.css';
-import { getHabits, concludeHabit, deleteHabit, updateHabit } from '../../Services/HabitsService';
+import {
+  getHabits,
+  concludeHabit,
+  deleteHabit,
+  updateHabit,
+  getDashboardUsuario,
+  getHabitStats,
+  isHabitCompletedToday,
+} from '../../Services/HabitsService';
 import type { HabitResponse } from '../../Types';
 import { useEffect, useState } from 'react';
 import Sidebar from '../../components/SideBar/sidebar';
@@ -12,6 +20,9 @@ import HeaderDashboard from '../../components/HeaderDashboard/headerdashboard';
 
 export default function Dashboard() {
   const [habits, setHabits] = useState<HabitResponse[]>([]);
+  const [habitsStats, setHabitsStats] = useState<Record<string, any>>({});
+  const [dashboard, setDashboard] = useState<any>(null);
+  const [completedToday, setCompletedToday] = useState<Record<string, boolean>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<HabitResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -19,10 +30,36 @@ export default function Dashboard() {
   const load = async () => {
     setLoading(true);
     try {
+      // 1 - pega hábitos do usuário
       const data = await getHabits();
       setHabits(data);
+
+      // 2 - pega overview por usuário (endpoint do backend)
+      const dash = await getDashboardUsuario();
+      setDashboard(dash);
+
+      // 3 - para cada hábito pega stats individuais e se foi concluído hoje
+      const statsObj: any = {};
+      const doneObj: any = {};
+
+      await Promise.all(data.map(async (habit) => {
+        try {
+          statsObj[habit.id] = await getHabitStats(habit.id);
+        } catch (e) {
+          statsObj[habit.id] = null;
+        }
+        try {
+          doneObj[habit.id] = await isHabitCompletedToday(habit.id);
+        } catch (e) {
+          doneObj[habit.id] = false;
+        }
+      }));
+
+      setHabitsStats(statsObj);
+      setCompletedToday(doneObj);
+
     } catch (err) {
-      console.error('Erro ao carregar hábitos', err);
+      console.error('Erro ao carregar dashboard', err);
     } finally {
       setLoading(false);
     }
@@ -30,7 +67,7 @@ export default function Dashboard() {
 
   useEffect(() => { load(); }, []);
 
-  const handleConclude = async (id: number) => {
+  const handleConclude = async (id: number | string) => {
     try {
       await concludeHabit(id);
       await load();
@@ -39,7 +76,7 @@ export default function Dashboard() {
     }
   };
 
-  const handlePause = async (id: number) => {
+  const handlePause = async (id: number | string) => {
     try {
       await updateHabit(id, { status: 'ATRASADO' });
       await load();
@@ -48,7 +85,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number | string) => {
     if (!confirm('Deseja realmente excluir este hábito?')) return;
     try {
       await deleteHabit(id);
@@ -71,7 +108,12 @@ export default function Dashboard() {
         <HeaderDashboard />
 
         <main className="mf-main-padded">
-          <StatsCards />
+          <StatsCards
+            ativos={dashboard?.totalHabitos ?? habits.length}
+            concluidosNoMes={dashboard?.concluidosSemana ?? 0}
+            streakDias={Math.max(...Object.values(habitsStats || {}).map((s:any)=>s?.streakAtual ?? 0), 0)}
+            consistencia={dashboard?.percentualHoje ?? 0}
+          />
 
           <div className="mf-grid-layout">
             <div className="mf-left">
@@ -88,6 +130,9 @@ export default function Dashboard() {
                     <HabitCard
                       key={h.id}
                       {...h}
+                      streak={habitsStats[h.id]?.streakAtual ?? 0}
+                      totalConcluidos={habitsStats[h.id]?.totalConcluido ?? 0}
+                      concluidoHoje={completedToday[h.id] ?? false}
                       onConclude={handleConclude}
                       onEdit={handleEdit}
                       onPause={handlePause}
@@ -99,7 +144,11 @@ export default function Dashboard() {
             </div>
 
             <aside className="mf-right">
-              <ProgressSection />
+              <ProgressSection
+                completedDays={dashboard?.completedDays ?? [false,false,false,false,false,false,false]}
+                weeklyStats={dashboard?.weeklyStats ?? [0,0,0,0,0,0,0]}
+                monthProgress={dashboard?.monthProgress ?? dashboard?.percentualHoje ?? 0}
+              />
             </aside>
           </div>
         </main>

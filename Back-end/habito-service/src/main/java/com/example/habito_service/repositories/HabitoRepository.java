@@ -16,4 +16,6 @@ public interface HabitoRepository extends JpaRepository<Habito, UUID>, JpaSpecif
 
     Optional<Habito> findByIdAndUsuarioId(UUID id, UUID usuarioId);
 
+    long countByUsuarioId(UUID usuarioId);
+
 }

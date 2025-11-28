@@ -44,20 +44,25 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
       tipo,
       frequencia,
       notificacaoAtiva,
+      concluido: false,
+      progresso: 0,
+      status: 'PENDENTE',
     };
 
     try {
+      let result: HabitResponse;
+
       if (editing?.id != null) {
-        const updated = await updateHabit(editing.id as number, payload);
-        onSaved?.(updated);
+        result = await updateHabit(editing.id as number, payload);
       } else {
-        const created = await createHabit(payload);
-        onSaved?.(created);
+        result = await createHabit(payload);
       }
+
+      onSaved?.(result);
       onClose();
     } catch (err) {
       console.error('Erro ao salvar hábito', err);
-      alert('Erro ao salvar hábito. Veja o console.');
+      alert('Erro ao salvar hábito. Confira o console.');
     } finally {
       setSaving(false);
     }
@@ -110,12 +115,11 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
           </div>
 
           <label className="mf-label">Frequência</label>
-          <div className="mf-frequency-row" role="radiogroup" aria-label="Frequência do hábito">
+          <div className="mf-frequency-row">
             <button
               type="button"
               className={`mf-frequency-btn ${frequencia === 'DIARIO' ? 'active' : ''}`}
               onClick={() => setFrequencia('DIARIO')}
-              aria-pressed={frequencia === 'DIARIO'}
             >
               Diário
             </button>
@@ -123,7 +127,6 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
               type="button"
               className={`mf-frequency-btn ${frequencia === 'SEMANAL' ? 'active' : ''}`}
               onClick={() => setFrequencia('SEMANAL')}
-              aria-pressed={frequencia === 'SEMANAL'}
             >
               Semanal
             </button>
@@ -131,7 +134,6 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
               type="button"
               className={`mf-frequency-btn ${frequencia === 'MENSAL' ? 'active' : ''}`}
               onClick={() => setFrequencia('MENSAL')}
-              aria-pressed={frequencia === 'MENSAL'}
             >
               Mensal
             </button>
@@ -146,8 +148,6 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
               type="button"
               className={`mf-toggle ${notificacaoAtiva ? 'on' : ''}`}
               onClick={() => setNotificacaoAtiva((s) => !s)}
-              aria-pressed={notificacaoAtiva}
-              aria-label={notificacaoAtiva ? 'Desativar notificações' : 'Ativar notificações'}
             >
               <div className="mf-toggle-knob" />
             </button>

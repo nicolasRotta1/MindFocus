@@ -31,7 +31,7 @@ export async function login(identifier: string, senha: string) {
 
 export async function register(payload: { nome: string; email?: string; telefone?: string; senha: string }) {
   const { data } = await api.post(API_ENDPOINTS.AUTH.REGISTER, payload);
-  return data; // backend pode retornar token+user
+  return data;
 }
 
 export async function logout() {
