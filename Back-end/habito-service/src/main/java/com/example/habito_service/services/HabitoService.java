@@ -48,7 +48,7 @@ public class HabitoService {
         Habito salvo = habitoRepository.save(habito);
 
         // Criar evento
-        HabitoEvent event = new HabitoEvent(salvo.getId(), salvo.getNome(), usuario.getId(),
+        HabitoEvent event = new HabitoEvent(salvo.getId(), salvo.getNome(), usuario.getEmail(), usuario.getId(),
                 "CRIADO", LocalDateTime.now());
 
         habitoProducer.enviarHabitoCriado(event);
@@ -132,6 +132,7 @@ public class HabitoService {
         HabitoEvent event = new HabitoEvent(
                 habitoExistente.getId(),
                 habitoExistente.getNome(),
+                habitoExistente.getUsuario().getEmail(),
                 habitoExistente.getUsuario().getId(),
                 "ATUALIZADO",
                 LocalDateTime.now()
@@ -153,6 +154,7 @@ public class HabitoService {
         HabitoEvent event = new HabitoEvent(
                 habito.getId(),
                 habito.getNome(),
+                habito.getUsuario().getEmail(),
                 habito.getUsuario().getId(),
                 "DELETADO",
                 LocalDateTime.now()

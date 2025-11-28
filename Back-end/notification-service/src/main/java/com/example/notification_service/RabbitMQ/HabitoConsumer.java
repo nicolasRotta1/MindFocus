@@ -1,7 +1,6 @@
 package com.example.notification_service.RabbitMQ;
-
 import com.example.notification_service.dto.HabitoEvent;
-import com.example.notification_service.service.NotificationService;
+import com.example.notification_service.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;

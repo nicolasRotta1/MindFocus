@@ -6,6 +6,7 @@ import java.util.UUID;
 public class HabitoEvent {
     private UUID habitoId;
     private String nome;
+    private String userEmail;
     private UUID usuarioId;
     private String evento; // "CRIADO", "CONCLUIDO", "ATUALIZADO"
     private LocalDateTime timestamp;
@@ -17,12 +18,23 @@ public class HabitoEvent {
     }
 
     // Construtor com todos os argumentos
-    public HabitoEvent(UUID habitoId, String nome, UUID usuarioId, String evento, LocalDateTime timestamp) {
+
+
+    public HabitoEvent(UUID habitoId, String nome, String userEmail, UUID usuarioId, String evento, LocalDateTime timestamp) {
         this.habitoId = habitoId;
         this.nome = nome;
+        this.userEmail = userEmail;
         this.usuarioId = usuarioId;
         this.evento = evento;
         this.timestamp = timestamp;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     // --- Getters e Setters (Omitidos para brevidade, mas devem estar presentes no arquivo completo) ---

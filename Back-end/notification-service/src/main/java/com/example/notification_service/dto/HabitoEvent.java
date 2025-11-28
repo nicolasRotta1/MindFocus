@@ -13,6 +13,7 @@ public class HabitoEvent implements Serializable {
 
     private UUID habitoId;
     private String nome;
+    private String userEmail;
     private UUID usuarioId;
     private String evento; // "CRIADO", "CONCLUIDO", "ATUALIZADO"
     private LocalDateTime timestamp;
@@ -21,9 +22,10 @@ public class HabitoEvent implements Serializable {
     public HabitoEvent() {
     }
 
-    public HabitoEvent(UUID habitoId, String nome, UUID usuarioId, String evento, LocalDateTime timestamp) {
+    public HabitoEvent(UUID habitoId, String nome, String userEmail, UUID usuarioId, String evento, LocalDateTime timestamp) {
         this.habitoId = habitoId;
         this.nome = nome;
+        this.userEmail = userEmail;
         this.usuarioId = usuarioId;
         this.evento = evento;
         this.timestamp = timestamp;
@@ -44,6 +46,14 @@ public class HabitoEvent implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public UUID getUsuarioId() {

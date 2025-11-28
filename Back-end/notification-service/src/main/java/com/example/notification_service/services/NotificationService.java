@@ -1,10 +1,9 @@
 package com.example.notification_service.services;
 
 import com.example.notification_service.dto.HabitoEvent;
-import com.example.notification_service.utils.MailSender;
+import com.example.notification_service.utils.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -13,28 +12,43 @@ import java.util.UUID;
 public class NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
+    private final EmailService emailService;
 
-    private final MailSender mailSender;
-
-    @Autowired
-    public NotificationService(MailSender mailSender) {
-        this.mailSender = mailSender;
+    public NotificationService(EmailService emailService) {
+        this.emailService = emailService;
     }
 
     public void processarEvento(HabitoEvent event) {
-        log.info("Processando evento de hábito: {} | Hábito: {} | Usuário: {}",
-                event.getEvento(), event.getNome(), event.getUsuarioId());
+        // 1. Validação de Segurança (Evita NullPointerException)
+        if (event == null || event.getEvento() == null) {
+            log.warn("Evento inválido ou nulo recebido. Ignorando.");
+            return;
+        }
+
+        // 2. Validação de E-mail
+        if (event.getUserEmail() == null || event.getUserEmail().isBlank()) {
+            log.error("Email não fornecido para o usuário ID: {}. Notificação cancelada.", event.getUsuarioId());
+            return;
+        }
+
+        log.info("Processando evento: {} | Hábito: {} | Email: {}",
+                event.getEvento(), event.getNome(), event.getUserEmail());
 
         String titulo = gerarTitulo(event);
         String mensagem = gerarMensagem(event);
 
+        // Envia Push (Simulado)
         enviarPushNotification(event.getUsuarioId(), titulo, mensagem);
 
-        enviarEmail(event.getUsuarioId(), titulo, mensagem);
+        // Envia Email (Real)
+        enviarEmail(event.getUserEmail(), titulo, mensagem);
     }
 
     private String gerarTitulo(HabitoEvent event) {
-        return switch (event.getEvento().toUpperCase()) {
+        // Safe check para toUpperCase
+        String tipoEvento = event.getEvento().toUpperCase();
+
+        return switch (tipoEvento) {
             case "CRIADO" -> "Novo Hábito Criado!";
             case "CONCLUIDO" -> "Parabéns! Hábito Concluído";
             case "ATUALIZADO" -> "Hábito Atualizado";
@@ -44,48 +58,45 @@ public class NotificationService {
     }
 
     private String gerarMensagem(HabitoEvent event) {
-        return switch (event.getEvento().toUpperCase()) {
+        String nomeHabito = event.getNome() != null ? event.getNome() : "Sem nome";
+        String tipoEvento = event.getEvento().toUpperCase();
+
+        return switch (tipoEvento) {
             case "CRIADO" ->
-                    String.format("Você acabou de criar o hábito <strong>%s</strong>! Vamos manter o foco?", event.getNome());
+                    String.format("Você acabou de criar o hábito <strong>%s</strong>! Vamos manter o foco?", nomeHabito);
             case "CONCLUIDO" ->
-                    String.format("Incrível! Você concluiu <strong>%s</strong> hoje. Continua assim!", event.getNome());
+                    String.format("Incrível! Você concluiu <strong>%s</strong> hoje. Continue assim!", nomeHabito);
             case "ATUALIZADO" ->
-                    String.format("O hábito <strong>%s</strong> foi atualizado com sucesso.", event.getNome());
+                    String.format("O hábito <strong>%s</strong> foi atualizado com sucesso.", nomeHabito);
             case "DELETADO" ->
-                    String.format("O hábito <strong>%s</strong> foi removido da sua lista.", event.getNome());
+                    String.format("O hábito <strong>%s</strong> foi removido da sua lista.", nomeHabito);
             default ->
-                    String.format("Algo aconteceu com seu hábito: %s", event.getNome());
+                    String.format("Algo aconteceu com seu hábito: %s", nomeHabito);
         };
     }
 
     private void enviarPushNotification(UUID usuarioId, String titulo, String mensagem) {
-        log.info("PUSH → Usuário {} | {} | {}", usuarioId, titulo, mensagem);
+        log.info("PUSH ENVIADO → Usuário: {} | Título: {}", usuarioId, titulo);
     }
 
-    /**
-     * Envia email usando sua classe utilitária MailSender
-     */
-    private void enviarEmail(UUID usuarioId, String titulo, String mensagem) {
-        String emailDestino = "usuario@example.com";
-
+    private void enviarEmail(String emailDestino, String titulo, String mensagem) {
         try {
-            // Envia como HTML bonito
-            mailSender.sendHtmlEmail(emailDestino, titulo, """
+            String htmlTemplate = """
                     <!DOCTYPE html>
                     <html>
                     <body style="font-family: Arial, sans-serif; color: #333;">
                         <h2 style="color: #4CAF50;">%s</h2>
-                        <p>%s</p>
-                        <hr>
-                        <small>Essa é uma mensagem automática do MindFocus.</small>
+                        <p style="font-size: 16px;">%s</p>
+                        <hr style="border: 0; border-top: 1px solid #eee;">
+                        <small style="color: #888;">Essa é uma mensagem automática do MindFocus.</small>
                     </body>
                     </html>
-                    """.formatted(titulo, mensagem));
+                    """.formatted(titulo, mensagem);
 
-            log.info("Email enviado com sucesso para {}", emailDestino);
+            emailService.sendHtmlEmail(emailDestino, titulo, htmlTemplate);
+            log.info("Email enviado com sucesso para: {}", emailDestino);
         } catch (Exception e) {
-            log.error("Falha ao enviar email para usuário {} (email: {}): {}", usuarioId, emailDestino, e.getMessage());
+            log.error("Falha crítica ao enviar email para {}: {}", emailDestino, e.getMessage());
         }
-
     }
 }
