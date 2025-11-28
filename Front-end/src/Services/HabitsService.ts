@@ -21,7 +21,6 @@ export const deleteHabit = async (id: number | string): Promise<void> => {
 };
 
 export const concludeHabit = async (id: number | string): Promise<any> => {
-  // Backend expects POST /api/habitos/{id}/concluir
   const { data } = await api.post(API_ENDPOINTS.HABITO.CONCLUDE(id));
   return data;
 };

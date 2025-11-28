@@ -161,30 +161,6 @@ public class HabitoService {
         habitoProducer.enviarNotificacao(event);
     }
 
-    // ============================
-    // Concluir hábito
-    // ============================
-    @Transactional
-    public HabitoResponse concluirHabito(UUID id) {
-        Habito habito = buscarPorId(id);
-        habito.setConcluido(true);
-        habito.setStatus(StatusHabito.CONCLUIDO);
-        habito.setProgresso(100);
-        habito.setAtualizadoEm(LocalDateTime.now());
-
-        // Criar evento de conclusão
-        HabitoEvent event = new HabitoEvent(
-                habito.getId(),
-                habito.getNome(),
-                habito.getUsuario().getId(),
-                "CONCLUIDO",
-                LocalDateTime.now()
-        );
-        habitoProducer.enviarHabitoCriado(event); // ou criar "enviarHabitoConcluido"
-        habitoProducer.enviarNotificacao(event);
-
-        return HabitoResponse.fromEntity(habito);
-    }
 
     // ============================
     // Exceções personalizadas

@@ -16,107 +16,116 @@ public class HabitoConcluidoService {
 
     private final HabitoConcluidoRepository concluidoRepository;
     private final HabitoRepository habitoRepository;
+    private final UsuarioService usuarioService;
 
-    public HabitoConcluidoService(
-            HabitoConcluidoRepository concluidoRepository,
-            HabitoRepository habitoRepository) {
+    public HabitoConcluidoService(HabitoConcluidoRepository concluidoRepository,
+                                  HabitoRepository habitoRepository,
+                                  UsuarioService usuarioService) {
         this.concluidoRepository = concluidoRepository;
         this.habitoRepository = habitoRepository;
+        this.usuarioService = usuarioService;
+    }
+
+    private Habito buscarHabitoDoUsuarioLogado(UUID habitoId) {
+        UUID usuarioId = usuarioService.buscarUsuarioLogado().getId();
+        return habitoRepository.findByIdAndUsuarioId(habitoId, usuarioId)
+                .orElseThrow(() -> new NoSuchElementException("Hábito não encontrado ou não pertence ao usuário"));
     }
 
     @Transactional
     public HabitoConcluido completeToday(UUID habitoId) {
-        Habito habito = habitoRepository.findById(habitoId)
-                .orElseThrow(() -> new NoSuchElementException("Hábito não encontrado"));
+        Habito habito = buscarHabitoDoUsuarioLogado(habitoId);
 
         LocalDate today = LocalDate.now();
-        boolean exists = concluidoRepository.existsByHabitoIdAndDate(habitoId, today);
+        boolean jaConcluidoHoje = concluidoRepository.existsByHabitoIdAndDate(habitoId, today);
 
-        if (exists) {
-            List<HabitoConcluido> list = concluidoRepository
-                    .findByHabitoIdAndDateBetweenOrderByDateAsc(habitoId, today, today);
-
-            return list.isEmpty() ? new HabitoConcluido(habito, today) : list.get(0);
+        if (jaConcluidoHoje) {
+            return concluidoRepository.findByHabitoIdAndDateBetweenOrderByDateAsc(habitoId, today, today)
+                    .get(0); // já existe, retorna o existente
         }
 
-        HabitoConcluido hc = new HabitoConcluido(habito, today);
-        return concluidoRepository.save(hc);
+        HabitoConcluido novo = new HabitoConcluido(habito, today);
+        return concluidoRepository.save(novo);
     }
 
     public boolean isCompletedOn(UUID habitoId, LocalDate date) {
+        buscarHabitoDoUsuarioLogado(habitoId); // só valida propriedade
         return concluidoRepository.existsByHabitoIdAndDate(habitoId, date);
     }
 
     public int calculateStreak(UUID habitoId) {
-        List<HabitoConcluido> completions =
-                concluidoRepository.findByHabitoIdOrderByDateDesc(habitoId);
+        buscarHabitoDoUsuarioLogado(habitoId); // valida dono
 
+        List<HabitoConcluido> completions = concluidoRepository.findByHabitoIdOrderByDateDesc(habitoId);
         if (completions.isEmpty()) return 0;
 
-        LocalDate checking = LocalDate.now();
-        int streak = 0;
-
-        Set<LocalDate> completedDates = completions.stream()
+        Set<LocalDate> datasConcluidas = completions.stream()
                 .map(HabitoConcluido::getDate)
                 .collect(Collectors.toSet());
 
-        while (completedDates.contains(checking)) {
+        LocalDate dia = LocalDate.now();
+        int streak = 0;
+
+        while (datasConcluidas.contains(dia)) {
             streak++;
-            checking = checking.minusDays(1);
+            dia = dia.minusDays(1);
         }
 
         return streak;
     }
 
     public long countCompletedBetween(UUID habitoId, LocalDate from, LocalDate to) {
+        buscarHabitoDoUsuarioLogado(habitoId);
         return concluidoRepository.countByHabitoIdAndDateBetween(habitoId, from, to);
     }
 
     public List<LocalDate> getHistory(UUID habitoId, LocalDate from, LocalDate to) {
-        List<HabitoConcluido> list =
-                concluidoRepository.findByHabitoIdAndDateBetweenOrderByDateAsc(habitoId, from, to);
-
-        return list.stream().map(HabitoConcluido::getDate).collect(Collectors.toList());
-    }
-
-    public long countCompletedTodayByUser(UUID userId) {
-        return concluidoRepository.countByHabitoUsuarioIdAndDate(userId, LocalDate.now());
-    }
-
-    public long countCompletedThisWeekByUser(UUID userId) {
-        LocalDate now = LocalDate.now();
-        LocalDate startOfWeek = now.minusDays(now.getDayOfWeek().getValue() - 1);
-        return concluidoRepository.countByHabitoUsuarioIdAndDateBetween(userId, startOfWeek, now);
+        buscarHabitoDoUsuarioLogado(habitoId);
+        return concluidoRepository.findByHabitoIdAndDateBetweenOrderByDateAsc(habitoId, from, to)
+                .stream()
+                .map(HabitoConcluido::getDate)
+                .collect(Collectors.toList());
     }
 
     public Map<String, Object> habitoStats(UUID habitoId) {
+        Habito habito = buscarHabitoDoUsuarioLogado(habitoId); // valida dono + carrega entidade
 
-        habitoRepository.findById(habitoId)
-                .orElseThrow(() -> new NoSuchElementException("Hábito não encontrado"));
-
-        LocalDate now = LocalDate.now();
+        LocalDate hoje = LocalDate.now();
+        LocalDate inicioMes = hoje.withDayOfMonth(1);
 
         int streak = calculateStreak(habitoId);
-        boolean doneToday = isCompletedOn(habitoId, now);
-        long total = concluidoRepository.countByHabitoId(habitoId);
+        boolean concluidoHoje = isCompletedOn(habitoId, hoje);
+        long totalConclusoes = concluidoRepository.countByHabitoId(habitoId);
+        long concluidasEsteMes = concluidoRepository.countByHabitoIdAndDateBetween(habitoId, inicioMes, hoje);
+        List<LocalDate> historico = getHistory(habitoId, LocalDate.of(2020, 1, 1), hoje); // histórico completo
 
-        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
-        long doneThisMonth = concluidoRepository.countByHabitoIdAndDateBetween(
-                habitoId, firstDayOfMonth, now
-        );
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("habitoId", habitoId);
+        stats.put("nomeHabito", habito.getNome());
+        stats.put("streakAtual", streak);
+        stats.put("concluidoHoje", concluidoHoje);
+        stats.put("totalConclusoes", totalConclusoes);
+        stats.put("concluidasEsteMes", concluidasEsteMes);
+        stats.put("historico", historico);
+        stats.put("dataConsulta", hoje.toString());
 
-        List<LocalDate> history =
-                getHistory(habitoId, LocalDate.of(2000, 1, 1), now);
+        return stats;
+    }
 
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("habitoId", habitoId);
-        resp.put("totalConcluido", total);
-        resp.put("concluidoHoje", doneToday);
-        resp.put("streakAtual", streak);
-        resp.put("concluidosEsteMes", doneThisMonth);
-        resp.put("historico", history);
-        resp.put("dataConsulta", now.toString());
+    public long countCompletedTodayByUser() {
+        UUID usuarioId = usuarioService.buscarUsuarioLogado().getId();
+        return concluidoRepository.countByHabitoUsuarioIdAndDate(usuarioId, LocalDate.now());
+    }
 
-        return resp;
+    public long countCompletedThisWeekByUser() {
+        UUID usuarioId = usuarioService.buscarUsuarioLogado().getId();
+        LocalDate hoje = LocalDate.now();
+        LocalDate inicioSemana = hoje.minusDays(hoje.getDayOfWeek().getValue() - 1); // segunda
+        return concluidoRepository.countByHabitoUsuarioIdAndDateBetween(usuarioId, inicioSemana, hoje);
+    }
+
+    public long countTotalHabitosByUser() {
+        UUID usuarioId = usuarioService.buscarUsuarioLogado().getId();
+        return habitoRepository.countByUsuarioId(usuarioId);
     }
 }

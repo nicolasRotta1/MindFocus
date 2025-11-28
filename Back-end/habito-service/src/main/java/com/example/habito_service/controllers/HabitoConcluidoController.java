@@ -33,10 +33,10 @@ public class HabitoConcluidoController {
         HabitoConcluido concluido = concluidoService.completeToday(habitoId);
 
         return ResponseEntity.ok(Map.of(
-                "mensagem", "Hábito marcado como concluído hoje com sucesso!",
+                "mensagem", "Hábito concluído hoje com sucesso!",
                 "conclusaoId", concluido.getId(),
-                "habitoId", concluido.getHabito().getId(),
-                "data", concluido.getDate().toString()
+                "data", concluido.getDate().toString(),
+                "streakAtual", concluidoService.calculateStreak(habitoId)
         ));
     }
 
@@ -78,8 +78,8 @@ public class HabitoConcluidoController {
         UUID userId = usuarioService.buscarUsuarioLogado().getId();
 
         long totalHabitos = habitoRepository.countByUsuarioId(userId);
-        long concluidosHoje = concluidoService.countCompletedTodayByUser(userId);
-        long concluidosSemana = concluidoService.countCompletedThisWeekByUser(userId);
+        long concluidosHoje = concluidoService.countCompletedTodayByUser();
+        long concluidosSemana = concluidoService.countCompletedThisWeekByUser();
 
         int percentualHoje = totalHabitos == 0 ? 0 :
                 (int) ((concluidosHoje * 100.0) / totalHabitos);
