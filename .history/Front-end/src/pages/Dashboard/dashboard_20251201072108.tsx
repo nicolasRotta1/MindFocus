@@ -2,7 +2,6 @@ import './dashboard.css';
 import {
   getHabits,
   concludeHabit,
-  unconcludeHabit,
   deleteHabit,
   updateHabit,
   getDashboardUsuario,
@@ -110,7 +109,6 @@ export default function Dashboard() {
   const handleConclude = async (id: number | string, valor?: number) => {
     try {
       await concludeHabit(id, valor);
-      // Recarrega após sucesso
       await load();
     } catch (err: any) {
       console.error('Erro ao concluir hábito:', err);
@@ -119,34 +117,17 @@ export default function Dashboard() {
         err?.response?.data?.message ||
         err?.message ||
         (err?.response?.status ? `Erro HTTP ${err.response.status}` : 'Erro desconhecido');
-      
-      // Tenta recarregar mesmo com erro (pode ter sido salvo no backend)
-      await load();
-      
-      // Mostra erro só após reload
-      alert('Aviso: ' + errorMsg);
+      alert('Erro ao concluir hábito: ' + errorMsg);
     }
   };
 
   const handleUnconclude = async (id: number | string) => {
     try {
-      console.log('Iniciando desconclusão do hábito:', id);
+      const { unconcludeHabit } = await import('../../Services/HabitsService');
       await unconcludeHabit(id);
-      console.log('Hábito desconcluído com sucesso');
       await load();
-    } catch (err: any) {
+    } catch (err) {
       console.error('Erro ao desconcluir hábito:', err);
-      const errorMsg = 
-        err?.response?.data?.mensagem ||
-        err?.response?.data?.message ||
-        err?.message ||
-        (err?.response?.status ? `Erro HTTP ${err.response.status}` : 'Erro desconhecido');
-      
-      // Tenta recarregar mesmo com erro
-      await load();
-      
-      // Mostra erro só após reload
-      alert('Aviso ao desconcluir: ' + errorMsg);
     }
   };
 

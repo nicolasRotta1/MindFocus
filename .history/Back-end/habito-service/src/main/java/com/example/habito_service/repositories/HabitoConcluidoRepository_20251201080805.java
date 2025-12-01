@@ -7,10 +7,6 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.habito_service.models.HabitoConcluido;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface HabitoConcluidoRepository extends JpaRepository<HabitoConcluido, UUID> {
 
@@ -29,10 +25,5 @@ public interface HabitoConcluidoRepository extends JpaRepository<HabitoConcluido
     long countByHabitoUsuarioIdAndDateBetween(UUID usuarioId, LocalDate from, LocalDate to);
 
     // Remove todos os registros de conclusão de um hábito em uma data e retorna quantos foram deletados
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM HabitoConcluido hc WHERE hc.habito.id = :habitoId AND hc.date = :date")
-    long deleteByHabitoIdAndDate(@Param("habitoId") UUID habitoId, @Param("date") LocalDate date);
-
+    long deleteByHabitoIdAndDate(UUID habitoId, LocalDate date);
 }
-

@@ -63,7 +63,7 @@ public class Habito {
     @JsonIgnore
     private Usuario usuario;
 
-    @OneToMany(mappedBy = "habito", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "habito", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private java.util.List<HabitoConcluido> concluidoList = new java.util.ArrayList<>();
 

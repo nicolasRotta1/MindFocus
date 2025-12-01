@@ -74,14 +74,8 @@ export const concludeHabit = async (id: number | string, valor?: number): Promis
   }
 };
 
-export const unconcludeHabit = async (id: number | string): Promise<any> => {
-  try {
-    const { data } = await api.post(API_ENDPOINTS.HABITO.UNCONCLUDE(id));
-    return data;
-  } catch (err: any) {
-    console.error('Erro na requisição unconcludeHabit:', err);
-    throw err;
-  }
+export const unconcludeHabit = async (id: number | string): Promise<void> => {
+  await api.post(API_ENDPOINTS.HABITO.UNCONCLUDE(id));
 };
 
 export const updateProgress = async (id: number | string, valor: number): Promise<void> => {

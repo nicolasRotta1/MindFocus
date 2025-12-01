@@ -1,16 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
 import Login from '../pages/Login/Login';
 import Dashboard from '../pages/Dashboard/dashboard';
+import React, { useEffect, useState } from 'react';
+import { getToken, fetchCurrentUser, clearToken } from '../Services/Auth';
 import LandingPage from '../pages/LandingPage/landingPage';
 import Cadastro from '../pages/Cadastro/cadastro';
 import Profile from '../pages/Profile/profile';
 import HabitHistory from '../pages/HabitHistory/habithistory';
-import { getToken, fetchCurrentUser, clearToken } from '../Services/Auth';
 
-// --------------------------------------------------
-// PrivateRoute: só permite acessar se estiver logado
-// --------------------------------------------------
 function PrivateRoute({ children }: { children: React.ReactElement }) {
   const token = getToken();
   const [checking, setChecking] = useState(true);
@@ -29,9 +26,14 @@ function PrivateRoute({ children }: { children: React.ReactElement }) {
       try {
         const user = await fetchCurrentUser();
         if (!mounted) return;
-        setAuthenticated(!!user);
-        if (!user) clearToken();
-      } catch {
+        if (user) {
+          setAuthenticated(true);
+        } else {
+          // token invalid or expired
+          clearToken();
+          setAuthenticated(false);
+        }
+      } catch (err) {
         clearToken();
         setAuthenticated(false);
       } finally {
@@ -47,47 +49,14 @@ function PrivateRoute({ children }: { children: React.ReactElement }) {
   return children;
 }
 
-// --------------------------------------------------
-// PublicRoute: redireciona logados para o dashboard
-// --------------------------------------------------
-function PublicRoute({ children }: { children: React.ReactElement }) {
-  const token = getToken();
-  if (token) return <Navigate to="/dashboard" replace />;
-  return children;
-}
-
-// --------------------------------------------------
-// Rotas da aplicação
-// --------------------------------------------------
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Página inicial */}
-        <Route path="/" element={
-          <PublicRoute>
-            <LandingPage />
-          </PublicRoute>
-        } />
-
-        {/* Rotas públicas */}
-        <Route path="/landingPage" element={
-          <PublicRoute>
-            <LandingPage />
-          </PublicRoute>
-        } />
-        <Route path="/login" element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        } />
-        <Route path="/cadastro" element={
-          <PublicRoute>
-            <Cadastro />
-          </PublicRoute>
-        } />
-
-        {/* Rotas privadas */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />  
+        <Route path="/landingPage" element={<LandingPage />} />      
+        <Route path='/cadastro' element={<Cadastro />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={
           <PrivateRoute>
             <Dashboard />
@@ -113,9 +82,6 @@ export default function AppRoutes() {
             <HabitHistory />
           </PrivateRoute>
         } />
-
-        {/* Redirecionamento genérico */}
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

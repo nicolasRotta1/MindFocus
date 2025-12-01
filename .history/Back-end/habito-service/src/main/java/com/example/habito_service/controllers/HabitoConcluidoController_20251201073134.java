@@ -1,14 +1,11 @@
 package com.example.habito_service.controllers;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +28,6 @@ public class HabitoConcluidoController {
     private final HabitoConcluidoService concluidoService;
     private final HabitoRepository habitoRepository;
     private final UsuarioService usuarioService;
-    private final Logger logger = LoggerFactory.getLogger(HabitoConcluidoController.class);
 
     public HabitoConcluidoController(HabitoConcluidoService concluidoService,
                                      HabitoRepository habitoRepository,
@@ -45,18 +41,14 @@ public class HabitoConcluidoController {
     public ResponseEntity<?> concluirHoje(@PathVariable UUID habitoId, @RequestParam(required = false) Double valor) {
         try {
             HabitoConcluido concluido = concluidoService.completeToday(habitoId, valor);
-            
-            // Map.of() não permite null, então construir manualmente
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensagem", "Hábito concluído hoje com sucesso!");
-            response.put("conclusaoId", concluido.getId());
-            response.put("data", concluido.getDate().toString());
-            if (concluido.getValor() != null) {
-                response.put("valor", concluido.getValor());
-            }
-            response.put("streakAtual", concluidoService.calculateStreak(habitoId));
-            
-            return ResponseEntity.ok(response);
+
+            return ResponseEntity.ok(Map.of(
+                    "mensagem", "Hábito concluído hoje com sucesso!",
+                    "conclusaoId", concluido.getId(),
+                    "data", concluido.getDate().toString(),
+                    "valor", concluido.getValor(),
+                    "streakAtual", concluidoService.calculateStreak(habitoId)
+            ));
         } catch (IllegalStateException e) {
             System.err.println("ERRO 401 - Usuário não autenticado: " + e.getMessage());
             e.printStackTrace();
@@ -91,9 +83,7 @@ public class HabitoConcluidoController {
     @PostMapping("/{habitoId}/desconcluir")
     public ResponseEntity<?> desconcluirHoje(@PathVariable UUID habitoId) {
         try {
-            logger.info("Iniciando desconclusão do hábito: {}", habitoId);
             concluidoService.uncompleteToday(habitoId);
-            logger.info("Hábito desconcluído com sucesso: {}", habitoId);
 
             return ResponseEntity.ok(Map.of(
                     "mensagem", "Hábito desconcluído com sucesso!",
@@ -101,21 +91,16 @@ public class HabitoConcluidoController {
                     "streakAtual", concluidoService.calculateStreak(habitoId)
             ));
         } catch (IllegalStateException e) {
-            logger.error("Usuário não autenticado ao desconcluir hábito: {}", habitoId, e);
             return ResponseEntity.status(401).body(Map.of(
                     "mensagem", "Usuário não autenticado: " + e.getMessage()
             ));
         } catch (NoSuchElementException e) {
-            logger.error("Hábito não encontrado ao desconcluir: {}", habitoId, e);
             return ResponseEntity.status(404).body(Map.of(
                     "mensagem", "Hábito não encontrado: " + e.getMessage()
             ));
         } catch (Exception e) {
-            logger.error("Erro ao desconcluir hábito: {}", habitoId, e);
-            e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of(
-                    "mensagem", "Erro ao desconcluir hábito: " + e.getMessage(),
-                    "detalhes", e.getClass().getSimpleName()
+                    "mensagem", "Erro ao desconcluir hábito: " + e.getMessage()
             ));
         }
     }

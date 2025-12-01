@@ -111,33 +111,22 @@ export default function HabitCard(props: Props) {
 
           <div className="mf-habit-stats">
             <small>Streak: {streak} dias</small>
+            <small>Total: {totalConcluidos}</small>
             <small>{concluidoHoje ? '✅ Concluído hoje' : '— Ainda não'}</small>
           </div>
         </div>
       </div>
 
       <div className="mf-actions">
-        {concluidoHoje ? (
-          <button
-            className="mf-btn mf-btn-secondary"
-            onClick={async () =>
-              onUnconclude && (await onUnconclude(id))
-            }
-          >
-            <CheckCircle size={16} />
-            <span>Desconcluir</span>
-          </button>
-        ) : (
-          <button
-            className="mf-btn mf-btn-success"
-            onClick={async () =>
-              onConclude && (await onConclude(id))
-            }
-          >
-            <CheckCircle size={16} />
-            <span>Concluir</span>
-          </button>
-        )}
+        <button
+          className="mf-btn mf-btn-success"
+          onClick={async () =>
+            onConclude && (await onConclude(id))
+          }
+        >
+          <CheckCircle size={16} />
+          <span>Concluir</span>
+        </button>
 
         <button
           className="mf-icon-btn"
@@ -146,7 +135,15 @@ export default function HabitCard(props: Props) {
         >
           <Edit2 size={16} />
         </button>
-        
+
+        <button
+          className="mf-icon-btn"
+          onClick={async () => onPause && (await onPause(id))}
+          title="Pausar"
+        >
+          <Pause size={16} />
+        </button>
+
         <button
           className="mf-icon-btn mf-delete"
           onClick={async () =>

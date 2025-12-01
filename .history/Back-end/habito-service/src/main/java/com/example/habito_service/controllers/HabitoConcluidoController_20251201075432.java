@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +29,6 @@ public class HabitoConcluidoController {
     private final HabitoConcluidoService concluidoService;
     private final HabitoRepository habitoRepository;
     private final UsuarioService usuarioService;
-    private final Logger logger = LoggerFactory.getLogger(HabitoConcluidoController.class);
 
     public HabitoConcluidoController(HabitoConcluidoService concluidoService,
                                      HabitoRepository habitoRepository,

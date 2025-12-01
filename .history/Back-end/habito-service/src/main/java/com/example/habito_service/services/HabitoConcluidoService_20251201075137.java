@@ -10,8 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +34,6 @@ public class HabitoConcluidoService {
         this.habitoRepository = habitoRepository;
         this.usuarioService = usuarioService;
     }
-
-    private final Logger logger = LoggerFactory.getLogger(HabitoConcluidoService.class);
 
     private Habito buscarHabitoDoUsuarioLogado(UUID habitoId) {
         UUID usuarioId = usuarioService.buscarUsuarioLogado().getId();
@@ -207,14 +203,9 @@ public class HabitoConcluidoService {
     public void uncompleteToday(UUID habitoId) {
         Habito habito = buscarHabitoDoUsuarioLogado(habitoId);
         LocalDate today = LocalDate.now();
-        // Remove explicitamente todos os registros de conclusão do dia diretamente no banco
-        long deleted = concluidoRepository.deleteByHabitoIdAndDate(habitoId, today);
-        if (deleted > 0) {
-            logger.info("Removidos {} registros de conclusão para o hábito {} na data {}", deleted, habitoId, today);
-            // garantir que as deleções sejam sincronizadas com o contexto
-            concluidoRepository.flush();
-        } else {
-            logger.info("Nenhum registro de conclusão encontrado para o hábito {} na data {}", habitoId, today);
+        List<HabitoConcluido> existentes = concluidoRepository.findByHabitoIdAndDateBetweenOrderByDateAsc(habitoId, today, today);
+        if (!existentes.isEmpty()) {
+            concluidoRepository.delete(existentes.get(0));
         }
         
         // Only update Habito if it's a SIM_NAO type

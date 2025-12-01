@@ -146,7 +146,6 @@ export default function HabitCard(props: Props) {
         >
           <Edit2 size={16} />
         </button>
-        
         <button
           className="mf-icon-btn mf-delete"
           onClick={async () =>

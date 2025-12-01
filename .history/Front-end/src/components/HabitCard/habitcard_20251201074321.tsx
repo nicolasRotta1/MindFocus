@@ -111,6 +111,7 @@ export default function HabitCard(props: Props) {
 
           <div className="mf-habit-stats">
             <small>Streak: {streak} dias</small>
+            <small>Total: {totalConcluidos}</small>
             <small>{concluidoHoje ? '✅ Concluído hoje' : '— Ainda não'}</small>
           </div>
         </div>
@@ -146,7 +147,15 @@ export default function HabitCard(props: Props) {
         >
           <Edit2 size={16} />
         </button>
-        
+
+        <button
+          className="mf-icon-btn"
+          onClick={async () => onPause && (await onPause(id))}
+          title="Pausar"
+        >
+          <Pause size={16} />
+        </button>
+
         <button
           className="mf-icon-btn mf-delete"
           onClick={async () =>
