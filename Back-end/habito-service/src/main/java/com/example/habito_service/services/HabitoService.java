@@ -1,5 +1,13 @@
 package com.example.habito_service.services;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
 import com.example.habito_service.RabbitMQ.HabitoProducer;
 import com.example.habito_service.dto.HabitoEvent;
 import com.example.habito_service.dto.HabitoRequest;
@@ -11,21 +19,15 @@ import com.example.habito_service.models.Habito;
 import com.example.habito_service.models.Usuario;
 import com.example.habito_service.repositories.HabitoRepository;
 import com.example.habito_service.specification.HabitoSpecification;
-import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import jakarta.transaction.Transactional;
 
 @Service
 public class HabitoService {
 
     private final HabitoRepository habitoRepository;
     private final UsuarioService usuarioService;
-    private final HabitoProducer habitoProducer; // ← injetando producer
+    private final HabitoProducer habitoProducer;
 
     public HabitoService(HabitoRepository habitoRepository,
                          UsuarioService usuarioService,
@@ -35,9 +37,7 @@ public class HabitoService {
         this.habitoProducer = habitoProducer;
     }
 
-    // ============================
-    // Criar hábito
-    // ============================
+    // Cria e salva um novo hábito
     public HabitoResponse criarHabito(HabitoRequest dto) {
         Usuario usuario = usuarioService.buscarUsuarioLogado();
         Habito habito = dto.toEntity(usuario);
@@ -57,9 +57,7 @@ public class HabitoService {
         return HabitoResponse.fromEntity(salvo);
     }
 
-    // ============================
-    // Listar hábitos do usuário com filtros
-    // ============================
+    // Lista hábitos do usuário com filtros opcionais
     public List<HabitoResponse> listarHabitosDoUsuario(
             String nome,
             TipoHabito tipo,
@@ -86,9 +84,7 @@ public class HabitoService {
                 .collect(Collectors.toList());
     }
 
-    // ============================
-    // Buscar hábito por ID
-    // ============================
+    // Retorna hábito por ID (valida usuário dono)
     public Habito buscarPorId(UUID id) {
         UUID usuarioId = usuarioService.buscarUsuarioLogado().getId();
 
@@ -96,9 +92,7 @@ public class HabitoService {
                 .orElseThrow(() -> new HabitoNotFoundException("Hábito não encontrado para este usuário"));
     }
 
-    // ============================
-    // Atualizar hábito
-    // ============================
+    // Atualiza campos do hábito
     @Transactional
     public HabitoResponse atualizarHabito(UUID id, HabitoRequest dto) {
         Habito habitoExistente = buscarPorId(id);
@@ -143,9 +137,7 @@ public class HabitoService {
         return HabitoResponse.fromEntity(habitoExistente);
     }
 
-    // ============================
-    // Deletar hábito
-    // ============================
+    // Remove hábito do usuário
     public void deletarHabito(UUID id) {
         Habito habito = buscarPorId(id);
         habitoRepository.delete(habito);
@@ -164,9 +156,7 @@ public class HabitoService {
     }
 
 
-    // ============================
-    // Exceções personalizadas
-    // ============================
+    // Exceção lançada quando hábito não é encontrado
     public static class HabitoNotFoundException extends RuntimeException {
         public HabitoNotFoundException(String message) {
             super(message);

@@ -9,17 +9,21 @@ export interface HabitRequest {
   frequencia: HabitFrequency;
   concluido?: boolean;    
   progresso?: number;     
-  notificacaoAtiva?: boolean; 
+  notificacaoAtiva?: boolean;
+  metaValor?: number;
+  unidade?: string;
 }
 
 export interface HabitResponse {
-  id: number;           
+  id: string;           
   nome: string;
   concluido: boolean;
   progresso: number;
   status: HabitStatus;
   tipo: HabitType;
   frequencia: HabitFrequency;
+  metaValor?: number;
+  unidade?: string;
   criadoEm: string;     
   atualizadoEm: string; 
   notificacaoAtiva?: boolean; 

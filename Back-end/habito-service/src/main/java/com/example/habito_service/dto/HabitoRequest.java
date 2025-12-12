@@ -1,14 +1,15 @@
 package com.example.habito_service.dto;
 
+import java.time.LocalDateTime;
+
 import com.example.habito_service.enums.FrequenciaHabito;
 import com.example.habito_service.enums.StatusHabito;
 import com.example.habito_service.enums.TipoHabito;
 import com.example.habito_service.models.Habito;
 import com.example.habito_service.models.Usuario;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import java.time.LocalDateTime;
 
 public class HabitoRequest {
 
@@ -26,6 +27,8 @@ public class HabitoRequest {
 
     private Boolean concluido = false;
     private Integer progresso = 0;
+    private Double metaValor;
+    private String unidade;
 
     public Habito toEntity(Usuario usuario) {
         Habito habito = new Habito();
@@ -34,6 +37,14 @@ public class HabitoRequest {
         habito.setFrequencia(this.frequencia);
         habito.setConcluido(this.concluido != null ? this.concluido : false);
         habito.setProgresso(this.progresso != null ? this.progresso : 0);
+
+        // Meta e unidade para hábitos quantitativos
+        if (this.metaValor != null) {
+            habito.setMetaValor(this.metaValor);
+        }
+        if (this.unidade != null) {
+            habito.setUnidade(this.unidade);
+        }
 
         // Define status corretamente baseado no "concluido"
         if (Boolean.TRUE.equals(this.concluido)) {
@@ -101,6 +112,22 @@ public class HabitoRequest {
 
     public void setProgresso(Integer progresso) {
         this.progresso = progresso;
+    }
+
+    public Double getMetaValor() {
+        return metaValor;
+    }
+
+    public void setMetaValor(Double metaValor) {
+        this.metaValor = metaValor;
+    }
+
+    public String getUnidade() {
+        return unidade;
+    }
+
+    public void setUnidade(String unidade) {
+        this.unidade = unidade;
     }
 
 

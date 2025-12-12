@@ -16,6 +16,8 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
   const [tipo, setTipo] = useState<HabitType>('SIM_NAO');
   const [frequencia, setFrequencia] = useState<HabitFrequency>('DIARIO');
   const [notificacaoAtiva, setNotificacaoAtiva] = useState(true);
+  const [metaValor, setMetaValor] = useState<number | string>('');
+  const [unidade, setUnidade] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -24,11 +26,15 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
       setTipo((editing.tipo as HabitType) ?? 'SIM_NAO');
       setFrequencia((editing.frequencia as HabitFrequency) ?? 'DIARIO');
       setNotificacaoAtiva(editing.notificacaoAtiva ?? true);
+      setMetaValor(editing.metaValor ?? '');
+      setUnidade(editing.unidade ?? '');
     } else {
       setNome('');
       setTipo('SIM_NAO');
       setFrequencia('DIARIO');
       setNotificacaoAtiva(true);
+      setMetaValor('');
+      setUnidade('');
     }
   }, [editing, isOpen]);
 
@@ -47,13 +53,17 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
       concluido: false,
       progresso: 0,
       status: 'PENDENTE',
+      ...(tipo === 'QUANTITATIVO' && {
+        metaValor: metaValor === '' ? undefined : Number(metaValor),
+        unidade: unidade || undefined,
+      }),
     };
 
     try {
       let result: HabitResponse;
 
       if (editing?.id != null) {
-        result = await updateHabit(editing.id as number, payload);
+        result = await updateHabit(editing.id, payload);
       } else {
         result = await createHabit(payload);
       }
@@ -138,6 +148,32 @@ export default function NewHabitModal({ isOpen, onClose, onSaved, editing = null
               Mensal
             </button>
           </div>
+
+          {tipo === 'QUANTITATIVO' && (
+            <>
+              <label className="mf-label" htmlFor="habit-meta">Meta (Valor)</label>
+              <input
+                id="habit-meta"
+                className="mf-input"
+                type="number"
+                value={metaValor}
+                onChange={(e) => setMetaValor(e.target.value)}
+                placeholder="Ex: 5"
+                step="0.1"
+              />
+
+              <label className="mf-label" htmlFor="habit-unidade">Unidade</label>
+              <input
+                id="habit-unidade"
+                className="mf-input"
+                type="text"
+                value={unidade}
+                onChange={(e) => setUnidade(e.target.value)}
+                placeholder="Ex: km, min, copos, páginas"
+                maxLength={50}
+              />
+            </>
+          )}
 
           <div className="mf-notif-row">
             <div>

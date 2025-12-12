@@ -1,12 +1,12 @@
 package com.example.habito_service.dto;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import com.example.habito_service.enums.FrequenciaHabito;
 import com.example.habito_service.enums.StatusHabito;
 import com.example.habito_service.enums.TipoHabito;
 import com.example.habito_service.models.Habito;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class HabitoResponse {
     private UUID id;
@@ -16,6 +16,8 @@ public class HabitoResponse {
     private StatusHabito status;
     private TipoHabito tipo;
     private FrequenciaHabito frequencia;
+    private Double metaValor;
+    private String unidade;
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
 
@@ -28,6 +30,8 @@ public class HabitoResponse {
         dto.status = habito.getStatus();
         dto.tipo = habito.getTipo();
         dto.frequencia = habito.getFrequencia();
+        dto.metaValor = habito.getMetaValor();
+        dto.unidade = habito.getUnidade();
         dto.criadoEm = habito.getCriadoEm();
         dto.atualizadoEm = habito.getAtualizadoEm();
         return dto;
@@ -85,6 +89,22 @@ public class HabitoResponse {
 
     public FrequenciaHabito getFrequencia() {
         return frequencia;
+    }
+
+    public Double getMetaValor() {
+        return metaValor;
+    }
+
+    public void setMetaValor(Double metaValor) {
+        this.metaValor = metaValor;
+    }
+
+    public String getUnidade() {
+        return unidade;
+    }
+
+    public void setUnidade(String unidade) {
+        this.unidade = unidade;
     }
 
     public void setFrequencia(FrequenciaHabito frequencia) {

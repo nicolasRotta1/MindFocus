@@ -1,9 +1,18 @@
 package com.example.habito_service.models;
 
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "habitos_concluidos", uniqueConstraints = {
@@ -25,6 +34,9 @@ public class HabitoConcluido {
 
     @Column(name = "habito_id", updatable = false, insertable = false)
     private UUID habitoId;
+
+    @Column(name = "valor")
+    private Double valor;
 
     public HabitoConcluido() {}
 
@@ -58,5 +70,17 @@ public class HabitoConcluido {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public UUID getHabitoId() {
+        return habitoId;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 }

@@ -1,17 +1,30 @@
 package com.example.habito_service.models;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.example.habito_service.enums.FrequenciaHabito;
 import com.example.habito_service.enums.StatusHabito;
 import com.example.habito_service.enums.TipoHabito;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "habitos")
@@ -50,6 +63,10 @@ public class Habito {
     @JsonIgnore
     private Usuario usuario;
 
+    @OneToMany(mappedBy = "habito", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private java.util.List<HabitoConcluido> concluidoList = new java.util.ArrayList<>();
+
     // Auditoria e timestamps
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -61,6 +78,13 @@ public class Habito {
     // Progresso do hábito (0-100%)
     @Column(nullable = false)
     private Integer progresso = 0;
+
+    // Meta para hábitos quantitativos (por exemplo: 30 minutos, 10 páginas)
+    @Column(nullable = true)
+    private Double metaValor;
+
+    @Column(nullable = true)
+    private String unidade;
 
     // Construtores
     public Habito() {
@@ -148,6 +172,22 @@ public class Habito {
 
     public void setProgresso(Integer progresso) {
         this.progresso = progresso;
+    }
+
+    public Double getMetaValor() {
+        return metaValor;
+    }
+
+    public void setMetaValor(Double metaValor) {
+        this.metaValor = metaValor;
+    }
+
+    public String getUnidade() {
+        return unidade;
+    }
+
+    public void setUnidade(String unidade) {
+        this.unidade = unidade;
     }
 
     public void setCriadoEm(LocalDateTime criadoEm) {

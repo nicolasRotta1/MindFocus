@@ -1,8 +1,11 @@
-import { Home, Target, TrendingUp, Calendar, User, LogOut } from 'lucide-react';
+import { Home, Target, Calendar, User, LogOut } from 'lucide-react';
 import './sidebar.css';
 import { logout } from '../../Services/Auth';
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {
+  const navigate = useNavigate();
+
   return (
     <aside className="mf-sidebar">
       <div className="mf-sidebar-top">
@@ -11,11 +14,10 @@ export default function Sidebar() {
       </div>
 
       <nav className="mf-nav">
-        <a href="#" className="mf-nav-item active"><Home size={20} /> <span>Dashboard</span></a>
-        <a href="#" className="mf-nav-item"><Target size={20} /> <span>Meus Hábitos</span></a>
-        <a href="#" className="mf-nav-item"><TrendingUp size={20} /> <span>Progresso / Insights</span></a>
-        <a href="#" className="mf-nav-item"><Calendar size={20} /> <span>Rotina</span></a>
-        <a href="#" className="mf-nav-item"><User size={20} /> <span>Perfil</span></a>
+        <button className="mf-nav-item active" onClick={() => navigate('/')}><Home size={20} /> <span>Dashboard</span></button>
+        <button className="mf-nav-item" onClick={() => navigate('/meus-habitos')}><Target size={20} /> <span>Meus Hábitos</span></button>
+        <button className="mf-nav-item" onClick={() => navigate('/rotina')}><Calendar size={20} /> <span>Rotina</span></button>
+        <button className="mf-nav-item" onClick={() => navigate('/profile')}><User size={20} /> <span>Perfil</span></button>
       </nav>
 
       <div className="mf-sidebar-bottom">

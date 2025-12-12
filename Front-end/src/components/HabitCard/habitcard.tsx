@@ -1,6 +1,5 @@
 import {
   Edit2,
-  Pause,
   Trash2,
   CheckCircle,
   Briefcase,
@@ -13,6 +12,7 @@ interface Props extends HabitResponse {
   totalConcluidos?: number;
   concluidoHoje?: boolean;
   onConclude?: (id: number | string) => Promise<void>;
+  onUnconclude?: (id: number | string) => Promise<void>;
   onEdit?: (habit: HabitResponse) => void;
   onPause?: (id: number | string) => Promise<void>;
   onDelete?: (id: number | string) => Promise<void>;
@@ -21,7 +21,7 @@ interface Props extends HabitResponse {
 function formatDate(d?: string | null): string {
   if (!d) return '-';
 
-  // tenta parsear diretamente
+  // Tenta converter string para data local
   let date = new Date(d);
   if (!isNaN(date.getTime())) {
     return date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
@@ -68,11 +68,10 @@ export default function HabitCard(props: Props) {
     status = 'PENDENTE',
     criadoEm,
     streak = 0,
-    totalConcluidos = 0,
     concluidoHoje = false,
     onConclude,
+    onUnconclude,
     onEdit,
-    onPause,
     onDelete,
   } = props;
 
@@ -109,22 +108,33 @@ export default function HabitCard(props: Props) {
 
           <div className="mf-habit-stats">
             <small>Streak: {streak} dias</small>
-            <small>Total: {totalConcluidos}</small>
             <small>{concluidoHoje ? '✅ Concluído hoje' : '— Ainda não'}</small>
           </div>
         </div>
       </div>
 
       <div className="mf-actions">
-        <button
-          className="mf-btn mf-btn-success"
-          onClick={async () =>
-            onConclude && (await onConclude(id))
-          }
-        >
-          <CheckCircle size={16} />
-          <span>Concluir</span>
-        </button>
+        {concluidoHoje ? (
+          <button
+            className="mf-btn mf-btn-secondary"
+            onClick={async () =>
+              onUnconclude && (await onUnconclude(id))
+            }
+          >
+            <CheckCircle size={16} />
+            <span>Desconcluir</span>
+          </button>
+        ) : (
+          <button
+            className="mf-btn mf-btn-success"
+            onClick={async () =>
+              onConclude && (await onConclude(id))
+            }
+          >
+            <CheckCircle size={16} />
+            <span>Concluir</span>
+          </button>
+        )}
 
         <button
           className="mf-icon-btn"
@@ -133,15 +143,7 @@ export default function HabitCard(props: Props) {
         >
           <Edit2 size={16} />
         </button>
-
-        <button
-          className="mf-icon-btn"
-          onClick={async () => onPause && (await onPause(id))}
-          title="Pausar"
-        >
-          <Pause size={16} />
-        </button>
-
+        
         <button
           className="mf-icon-btn mf-delete"
           onClick={async () =>

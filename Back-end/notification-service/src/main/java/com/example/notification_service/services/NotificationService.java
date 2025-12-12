@@ -1,51 +1,51 @@
 package com.example.notification_service.services;
 
-import com.example.notification_service.dto.HabitoEvent;
-import com.example.notification_service.utils.EmailService;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import com.example.notification_service.dto.HabitoEvent;
+import com.example.notification_service.models.Notificacao;
+import com.example.notification_service.repositories.NotificacaoRepository;
 
 @Service
+/* Serviço de notificações: processa eventos e grava no banco. */
 public class NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
-    private final EmailService emailService;
+    private final NotificacaoRepository notificacaoRepository;
 
-    public NotificationService(EmailService emailService) {
-        this.emailService = emailService;
+    public NotificationService(NotificacaoRepository notificacaoRepository) {
+        this.notificacaoRepository = notificacaoRepository;
     }
 
     public void processarEvento(HabitoEvent event) {
-        // 1. Validação de Segurança (Evita NullPointerException)
         if (event == null || event.getEvento() == null) {
             log.warn("Evento inválido ou nulo recebido. Ignorando.");
             return;
         }
 
-        // 2. Validação de E-mail
-        if (event.getUserEmail() == null || event.getUserEmail().isBlank()) {
-            log.error("Email não fornecido para o usuário ID: {}. Notificação cancelada.", event.getUsuarioId());
-            return;
-        }
-
-        log.info("Processando evento: {} | Hábito: {} | Email: {}",
-                event.getEvento(), event.getNome(), event.getUserEmail());
+        log.info("Processando evento: {} | Hábito: {}",
+                event.getEvento(), event.getNome());
 
         String titulo = gerarTitulo(event);
         String mensagem = gerarMensagem(event);
 
-        // Envia Push (Simulado)
-        enviarPushNotification(event.getUsuarioId(), titulo, mensagem);
+        // grava notificação
+        try {
+            Notificacao n = new Notificacao(event.getUsuarioId(), titulo, mensagem, event.getEvento());
+            notificacaoRepository.save(n);
+            log.info("Notificação persistida: {}", n);
+        } catch (Exception e) {
+            log.error("Falha ao persistir notificação para usuário {}: {}", event.getUsuarioId(), e.getMessage());
+        }
 
-        // Envia Email (Real)
-        enviarEmail(event.getUserEmail(), titulo, mensagem);
+        enviarPushNotification(event.getUsuarioId(), titulo, mensagem);
     }
 
     private String gerarTitulo(HabitoEvent event) {
-        // Safe check para toUpperCase
         String tipoEvento = event.getEvento().toUpperCase();
 
         return switch (tipoEvento) {
@@ -75,28 +75,7 @@ public class NotificationService {
         };
     }
 
-    private void enviarPushNotification(UUID usuarioId, String titulo, String mensagem) {
+    private void enviarPushNotification(UUID usuarioId, String titulo, @SuppressWarnings("unused") String mensagem) {
         log.info("PUSH ENVIADO → Usuário: {} | Título: {}", usuarioId, titulo);
-    }
-
-    private void enviarEmail(String emailDestino, String titulo, String mensagem) {
-        try {
-            String htmlTemplate = """
-                    <!DOCTYPE html>
-                    <html>
-                    <body style="font-family: Arial, sans-serif; color: #333;">
-                        <h2 style="color: #4CAF50;">%s</h2>
-                        <p style="font-size: 16px;">%s</p>
-                        <hr style="border: 0; border-top: 1px solid #eee;">
-                        <small style="color: #888;">Essa é uma mensagem automática do MindFocus.</small>
-                    </body>
-                    </html>
-                    """.formatted(titulo, mensagem);
-
-            emailService.sendHtmlEmail(emailDestino, titulo, htmlTemplate);
-            log.info("Email enviado com sucesso para: {}", emailDestino);
-        } catch (Exception e) {
-            log.error("Falha crítica ao enviar email para {}: {}", emailDestino, e.getMessage());
-        }
     }
 }

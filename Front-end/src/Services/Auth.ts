@@ -50,3 +50,22 @@ export async function fetchCurrentUser() {
     return null;
   }
 }
+
+export async function updateCurrentUser(payload: Record<string, any>) {
+  try {
+    const { data } = await api.patch(API_ENDPOINTS.USUARIO.ATUAL, payload);
+    return data ?? null;
+  } catch (err) {
+    console.error('Erro ao atualizar usuário:', err);
+    throw err;
+  }
+}
+
+export async function deleteCurrentUser() {
+  try {
+    await api.delete(API_ENDPOINTS.USUARIO.ATUAL);
+  } catch (err) {
+    console.error('Erro ao deletar usuário:', err);
+    throw err;
+  }
+}

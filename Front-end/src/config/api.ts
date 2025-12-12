@@ -1,6 +1,7 @@
 import axios, { AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+export const API_NOTIFICATION_BASE_URL = import.meta.env.VITE_NOTIFICATION_BASE_URL || 'http://localhost:8090';
 
 export const API_ENDPOINTS = {
   AUTH: {
@@ -14,12 +15,21 @@ export const API_ENDPOINTS = {
   HABITO: {
     BASE: `/api/habitos`,
     CONCLUDE: (id: number | string) => `/api/habitos/${id}/concluir`,
+    UNCONCLUDE: (id: number | string) => `/api/habitos/${id}/desconcluir`,
     STATS: (id: number | string) => `/api/habitos/${id}/stats`,
     COMPLETED_TODAY: (id: number | string) => `/api/habitos/${id}/concluido-hoje`,
     HISTORY: (id: number | string, de: string, ate: string) =>
       `/api/habitos/${id}/historico?de=${de}&ate=${ate}`,
+    HISTORY_PROGRESS: (id: number | string, de: string, ate: string) =>
+      `/api/habitos/${id}/historico-progresso?de=${de}&ate=${ate}`,
+    PROGRESS: (id: number | string) => `/api/habitos/${id}/progresso`,
     DASHBOARD_USER: `/api/habitos/dashboard/usuario`,
     OVERVIEW: `/api/habitos/dashboard/overview`,
+  },
+  NOTIFICATIONS: {
+    LIST: `/api/notifications`,
+    UNREAD_COUNT: `/api/notifications/unread/count`,
+    MARK_READ: (id: string) => `/api/notifications/${id}/read`,
   },
 };
 
