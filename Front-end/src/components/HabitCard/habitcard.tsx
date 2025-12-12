@@ -1,6 +1,5 @@
 import {
   Edit2,
-  Pause,
   Trash2,
   CheckCircle,
   Briefcase,
@@ -69,12 +68,10 @@ export default function HabitCard(props: Props) {
     status = 'PENDENTE',
     criadoEm,
     streak = 0,
-    totalConcluidos = 0,
     concluidoHoje = false,
     onConclude,
     onUnconclude,
     onEdit,
-    onPause,
     onDelete,
   } = props;
 

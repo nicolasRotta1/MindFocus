@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle, XCircle, Edit2, Pause, Trash2, History } from 'lucide-react';
+import { CheckCircle, XCircle, Edit2, Trash2, History } from 'lucide-react';
 import './habitcard.css';
 import { useNavigate } from 'react-router-dom';
 import type { HabitResponse } from '../../Types';
@@ -25,7 +25,6 @@ export default function HabitCardQuantitativo(props: Props) {
     status = 'PENDENTE',
     criadoEm,
     streak = 0,
-    totalConcluidos = 0,
     concluidoHoje = false,
     progresso = 0,
     metaValor = 0,
@@ -33,7 +32,6 @@ export default function HabitCardQuantitativo(props: Props) {
     onConclude,
     onUnconclude,
     onEdit,
-    onPause,
     onDelete,
   } = props;
 

@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle, Edit2, Pause, Trash2, History } from 'lucide-react';
+import { CheckCircle, XCircle, Edit2, Trash2, History } from 'lucide-react';
 import './habitcard.css';
 import { useNavigate } from 'react-router-dom';
 import type { HabitResponse } from '../../Types';
@@ -29,7 +29,6 @@ export default function HabitCardSimNao(props: Props) {
     onConclude,
     onUnconclude,
     onEdit,
-    onPause,
     onDelete,
   } = props;
 
