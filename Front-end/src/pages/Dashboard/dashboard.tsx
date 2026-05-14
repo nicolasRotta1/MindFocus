@@ -9,8 +9,8 @@ import {
   getDashboardHistory,
   getHabitStats,
   isHabitCompletedToday,
-} from '../../Services/HabitsService';
-import type { HabitResponse, HabitType, HabitFrequency, HabitStatus } from '../../Types';
+} from '../../services/HabitsService';
+import type { HabitResponse, HabitType, HabitFrequency, HabitStatus } from '../../types/habit';
 import { useEffect, useState } from 'react';
 import Sidebar from '../../components/SideBar/sidebar';
 import StatsCards from '../../components/StatCard/statcard';
@@ -73,7 +73,7 @@ export default function Dashboard() {
         });
 
         setDashboard({ ...dash, weeklyStats: weeklyStatsArr, completedDays: completedDaysArr });
-      } catch (e) {
+      } catch {
         // fallback para dash sem weekly data
         setDashboard(dash);
       }
@@ -85,12 +85,12 @@ export default function Dashboard() {
       await Promise.all(data.map(async (habit) => {
         try {
           statsObj[habit.id] = await getHabitStats(habit.id);
-        } catch (e) {
+        } catch {
           statsObj[habit.id] = null;
         }
         try {
           doneObj[habit.id] = await isHabitCompletedToday(habit.id);
-        } catch (e) {
+        } catch {
           doneObj[habit.id] = false;
         }
       }));

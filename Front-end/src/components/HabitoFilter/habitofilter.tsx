@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 import './habitofilter.css';
-import type { HabitType, HabitFrequency, HabitStatus } from '../../Types';
+import type { HabitType, HabitFrequency, HabitStatus } from '../../types/habit';
 
 interface HabitoFilterProps {
   tipo?: HabitType | '';

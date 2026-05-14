@@ -11,17 +11,13 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-mindfocus}
       MYSQL_USER: ${MYSQL_USER:-mindfocus_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mindfocus_pass}
-    # Porta comentada - MySQL local pode estar usando 3306
-    # Descomente se quiser expor a porta
-    # ports:
-    #   - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
     networks:
       - mindfocus-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -68,7 +64,7 @@ services:
       SPRING_RABBITMQ_PORT: ${SPRING_RABBITMQ_PORT:-5672}
       SPRING_RABBITMQ_USERNAME: ${SPRING_RABBITMQ_USERNAME:-guest}
       SPRING_RABBITMQ_PASSWORD: ${SPRING_RABBITMQ_PASSWORD:-guest}
-      JWT_SECRET: ${JWT_SECRET:-nicolocoloco}
+      JWT_SECRET: ${JWT_SECRET:-meu-secreto-jwt}
       JWT_ISSUER: ${JWT_ISSUER:-mindfocus-backend}
       JWT_EXPIRATION_HOURS: ${JWT_EXPIRATION_HOURS:-24}
     ports:
@@ -104,6 +100,8 @@ services:
       SPRING_RABBITMQ_PORT: ${SPRING_RABBITMQ_PORT:-5672}
       SPRING_RABBITMQ_USERNAME: ${SPRING_RABBITMQ_USERNAME:-guest}
       SPRING_RABBITMQ_PASSWORD: ${SPRING_RABBITMQ_PASSWORD:-guest}
+      JWT_SECRET: ${JWT_SECRET:-meu-secreto-jwt}
+      JWT_ISSUER: ${JWT_ISSUER:-mindfocus-backend}
       SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-}
       SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-}
       SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-}
@@ -111,8 +109,12 @@ services:
     ports:
       - "8090:8090"
     depends_on:
-      - rabbitmq
-      - habito-service
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      habito-service:
+        condition: service_started
     networks:
       - mindfocus-network
     healthcheck:

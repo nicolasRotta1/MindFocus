@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import './newhabitmodal.css';
-import { createHabit, updateHabit } from '../../Services/HabitsService';
-import type { HabitRequest, HabitResponse, HabitType, HabitFrequency } from '../../Types';
+import { createHabit, updateHabit } from '../../services/HabitsService';
+import type { HabitRequest, HabitResponse, HabitType, HabitFrequency } from '../../types/habit';
 
 interface Props {
   isOpen: boolean;

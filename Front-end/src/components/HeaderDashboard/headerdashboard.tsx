@@ -2,9 +2,9 @@ import { Bell, Flame } from 'lucide-react';
 import './headerdashboard.css';
 import api, { API_ENDPOINTS } from '../../config/api';
 import { useEffect, useState } from 'react';
-import { getHabits, getHabitStats } from '../../Services/HabitsService';
+import { getHabits, getHabitStats } from '../../services/HabitsService';
 import { useNavigate } from 'react-router-dom';
-import NotificationsService, { type NotificacaoDTO } from '../../Services/NotificationsService';
+import NotificationsService, { type NotificacaoDTO } from '../../services/NotificationsService';
 
 export default function HeaderDashboard() {
   const navigate = useNavigate();
@@ -71,7 +71,9 @@ export default function HeaderDashboard() {
         try {
           const count = await NotificationsService.getUnreadCount();
           setUnreadCount(count);
-        } catch {}
+        } catch {
+          setUnreadCount(0);
+        }
       } catch (err) {
         console.error('Erro ao buscar notificações:', err);
       }

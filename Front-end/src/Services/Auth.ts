@@ -1,4 +1,5 @@
 import api, { API_ENDPOINTS } from '../config/api';
+import { writeStoredToken, readStoredToken, clearStoredToken } from '../auth/tokenStorage';
 
 export type IdentifierType = 'telefone' | 'email';
 
@@ -8,15 +9,15 @@ interface AuthResponse {
 }
 
 export function setToken(token: string) {
-  localStorage.setItem('authToken', token);
+  writeStoredToken(token);
 }
 
 export function getToken(): string | null {
-  return localStorage.getItem('authToken');
+  return readStoredToken();
 }
 
 export function clearToken() {
-  localStorage.removeItem('authToken');
+  clearStoredToken();
 }
 
 export async function login(identifier: string, senha: string) {

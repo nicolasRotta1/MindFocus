@@ -1,5 +1,13 @@
 # README — API (Back-end) MindFocus
 
+## Configuração e convenções
+
+- **Variáveis de ambiente:** use o mesmo modelo que `infra/.env.example` na raiz do monorepo — preferir `SPRING_DATASOURCE_*`, `SPRING_RABBITMQ_*`, `JWT_*` (não commitar segredos em `application.properties`).
+- **OpenAPI (Swagger UI):** com o serviço em execução — **habito-service:** `http://localhost:8080/swagger-ui.html` — **notification-service:** `http://localhost:8090/swagger-ui.html`.
+- **Flyway:** `spring.flyway.enabled` está `false` por defeito; ative (`SPRING_FLYWAY_ENABLED=true`) quando existirem scripts em `classpath:db/migration`.
+- **Base de dados:** ambos os serviços podem usar o schema MySQL `mindfocus`; convém documentar que tabelas pertencem a qual serviço (modelos JPA de cada projeto).
+- **JWT / segurança:** a validação JWT está duplicada entre `habito-service` e `notification-service`; um futuro módulo Maven partilhado (ex.: `mindfocus-security-starter`) pode unificar se a lógica convergir.
+
 ## Base URL
 
 ```
@@ -307,16 +315,20 @@ Authorization: Bearer <token>
 
 # Variáveis de Ambiente (Back-end)
 
+Ver [infra/.env.example](../infra/.env.example). Exemplos usados pelo Spring Boot:
+
 ```
-DATABASE_URL=
-DATABASE_USERNAME=
-DATABASE_PASSWORD=
+SPRING_DATASOURCE_URL=
+SPRING_DATASOURCE_USERNAME=
+SPRING_DATASOURCE_PASSWORD=
+SPRING_RABBITMQ_HOST=
+SPRING_RABBITMQ_PORT=
+SPRING_RABBITMQ_USERNAME=
+SPRING_RABBITMQ_PASSWORD=
+SPRING_RABBITMQ_SSL_ENABLED=
 JWT_SECRET=
 JWT_ISSUER=
-RABBITMQ_HOST=
-RABBITMQ_PORT=
-RABBITMQ_USERNAME=
-RABBITMQ_PASSWORD=
+JWT_EXPIRATION_HOURS=
 ```
 
 ---

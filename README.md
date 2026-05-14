@@ -63,6 +63,14 @@ Para subir o sistema completo de forma integrada, use Docker Compose. Isso inclu
 ```
 cd infra
 ```
+
+Copie o ficheiro de exemplo e defina segredos (obrigatório: `JWT_SECRET` — ver comentários em `.env.example`):
+
+- Windows (PowerShell): `Copy-Item .env.example .env`
+- Linux/macOS: `cp .env.example .env`
+
+Edite `.env` antes de subir os contentores.
+
 ### Passo 2: De build e suba os containers com o comando:
 ```
 docker compose up -d --build

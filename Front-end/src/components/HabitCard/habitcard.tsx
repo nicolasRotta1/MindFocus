@@ -5,7 +5,7 @@ import {
   Briefcase,
 } from 'lucide-react';
 import './habitcard.css';
-import type { HabitResponse, HabitType, HabitFrequency, HabitStatus } from '../../Types';
+import type { HabitResponse, HabitType, HabitFrequency, HabitStatus } from '../../types/habit';
 
 interface Props extends HabitResponse {
   streak?: number;

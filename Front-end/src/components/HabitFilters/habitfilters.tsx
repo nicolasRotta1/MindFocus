@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import './habitfilters.css';
-import type { HabitType, HabitStatus, HabitFrequency } from '../../Types';
+import type { HabitType, HabitStatus, HabitFrequency } from '../../types/habit';
 
 export interface HabitFilters {
   nome?: string;

@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.example.habito_service.dto.HabitoEvent;
 
 /* Envia eventos de hábito para o RabbitMQ. */
 @Component
+@Profile("!test")
 public class HabitoProducer {
 
     private static final Logger logger = LoggerFactory.getLogger(HabitoProducer.class);

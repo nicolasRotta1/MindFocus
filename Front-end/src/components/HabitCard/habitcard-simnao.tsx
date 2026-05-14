@@ -1,7 +1,7 @@
 import { CheckCircle, XCircle, Edit2, Trash2, History } from 'lucide-react';
 import './habitcard.css';
 import { useNavigate } from 'react-router-dom';
-import type { HabitResponse } from '../../Types';
+import type { HabitResponse } from '../../types/habit';
 
 interface Props extends HabitResponse {
   streak?: number;

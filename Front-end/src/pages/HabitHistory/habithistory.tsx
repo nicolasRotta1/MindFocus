@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar } from 'lucide-react';
-import { getHabitProgressHistory, getDashboardHistory, getHabitById } from '../../Services/HabitsService';
-import type { ProgressHistoryItem } from '../../Services/HabitsService';
+import { getHabitProgressHistory, getDashboardHistory, getHabitById } from '../../services/HabitsService';
+import type { ProgressHistoryItem } from '../../services/HabitsService';
 import './habithistory.css';
 import Sidebar from '../../components/SideBar/sidebar';
 

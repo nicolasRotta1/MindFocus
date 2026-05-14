@@ -5,17 +5,17 @@ export type HabitStatus = 'PENDENTE' | 'CONCLUIDO' | 'ATRASADO';
 export interface HabitRequest {
   nome: string;
   tipo: HabitType;
-  status?: HabitStatus;   
+  status?: HabitStatus;
   frequencia: HabitFrequency;
-  concluido?: boolean;    
-  progresso?: number;     
+  concluido?: boolean;
+  progresso?: number;
   notificacaoAtiva?: boolean;
   metaValor?: number;
   unidade?: string;
 }
 
 export interface HabitResponse {
-  id: string;           
+  id: string;
   nome: string;
   concluido: boolean;
   progresso: number;
@@ -24,9 +24,9 @@ export interface HabitResponse {
   frequencia: HabitFrequency;
   metaValor?: number;
   unidade?: string;
-  criadoEm: string;     
-  atualizadoEm: string; 
-  notificacaoAtiva?: boolean; 
+  criadoEm: string;
+  atualizadoEm: string;
+  notificacaoAtiva?: boolean;
 }
 
 export interface HabitStats {
@@ -35,7 +35,7 @@ export interface HabitStats {
   concluidoHoje?: boolean;
   streakAtual?: number;
   concluidosEsteMes?: number;
-  historico?: string[]; 
+  historico?: string[];
   dataConsulta?: string;
 }
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff, ArrowLeft, Mail, Phone } from 'lucide-react';
-import { register } from '../../Services/Auth';
+import { register } from '../../services/Auth';
 import { useNavigate } from 'react-router-dom';
 import './cadastro.css';
 

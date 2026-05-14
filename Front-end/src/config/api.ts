@@ -1,4 +1,5 @@
 import axios, { AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import { clearStoredToken } from '../auth/tokenStorage';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 export const API_NOTIFICATION_BASE_URL = import.meta.env.VITE_NOTIFICATION_BASE_URL || 'http://localhost:8090';
@@ -46,11 +47,29 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     if (!config.headers) {
       config.headers = new AxiosHeaders();
     } else if (!(config.headers instanceof AxiosHeaders)) {
-      config.headers = new AxiosHeaders(config.headers as any);
+      config.headers = new AxiosHeaders(config.headers as never);
     }
     (config.headers as AxiosHeaders).set('Authorization', `Bearer ${token}`);
   }
   return config;
 }, (error) => Promise.reject(error));
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status as number | undefined;
+    const reqUrl = String(error.config?.url ?? '');
+    const isAuthPublic =
+      reqUrl.includes('/api/auth/login') ||
+      reqUrl.includes('/api/auth/register');
+    if (status === 401 && !isAuthPublic) {
+      clearStoredToken();
+      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+        window.location.assign('/login');
+      }
+    }
+    return Promise.reject(error);
+  },
+);
 
 export default api;

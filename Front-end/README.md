@@ -93,7 +93,9 @@ Front-end/
     │       └── Login.tsx
     ├── routes/               # definição de rotas do app
     │   └── AppRoutes.tsx
-    ├── Services/             # chamadas à API (Axios)
+    ├── services/             # chamadas à API (Axios)
+    ├── auth/                 # AuthProvider e armazenamento de sessão
+    ├── types/                # tipos partilhados (ex.: hábito)
     │   ├── Auth.ts
     │   └── HabitsService.ts
     ├── App.tsx

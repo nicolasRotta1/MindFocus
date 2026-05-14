@@ -10,7 +10,7 @@ import {
   EyeOff,
   AlertCircle,
 } from 'lucide-react';
-import { login } from '../../Services/Auth';
+import { login } from '../../services/Auth';
 
 import './Login.css';
 

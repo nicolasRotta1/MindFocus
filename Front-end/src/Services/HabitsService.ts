@@ -1,5 +1,5 @@
 ﻿import api, { API_ENDPOINTS } from '../config/api';
-import type { HabitRequest, HabitResponse, HabitStats, DashboardUsuario, HabitType, HabitFrequency, HabitStatus } from '../Types';
+import type { HabitRequest, HabitResponse, HabitStats, DashboardUsuario, HabitType, HabitFrequency, HabitStatus } from '../types/habit';
 
 export interface ProgressHistoryItem {
   data: string;

@@ -1,6 +1,6 @@
 import { Home, Target, Calendar, User, LogOut } from 'lucide-react';
 import './sidebar.css';
-import { logout } from '../../Services/Auth';
+import { logout } from '../../services/Auth';
 import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {

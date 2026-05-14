@@ -6,13 +6,11 @@ import LandingPage from '../pages/LandingPage/landingPage';
 import Cadastro from '../pages/Cadastro/cadastro';
 import Profile from '../pages/Profile/profile';
 import HabitHistory from '../pages/HabitHistory/habithistory';
-import { getToken, fetchCurrentUser, clearToken } from '../Services/Auth';
+import { fetchCurrentUser } from '../services/Auth';
+import { useAuth } from '../auth/useAuth';
 
-// --------------------------------------------------
-// PrivateRoute: só permite acessar se estiver logado
-// --------------------------------------------------
 function PrivateRoute({ children }: { children: React.ReactElement }) {
-  const token = getToken();
+  const { token, clearToken } = useAuth();
   const [checking, setChecking] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
 
@@ -40,37 +38,29 @@ function PrivateRoute({ children }: { children: React.ReactElement }) {
     })();
 
     return () => { mounted = false; };
-  }, [token]);
+  }, [token, clearToken]);
 
   if (checking) return null;
   if (!authenticated) return <Navigate to="/login" replace />;
   return children;
 }
 
-// --------------------------------------------------
-// PublicRoute: redireciona logados para o dashboard
-// --------------------------------------------------
 function PublicRoute({ children }: { children: React.ReactElement }) {
-  const token = getToken();
+  const { token } = useAuth();
   if (token) return <Navigate to="/dashboard" replace />;
   return children;
 }
 
-// --------------------------------------------------
-// Rotas da aplicação
-// --------------------------------------------------
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Página inicial */}
         <Route path="/" element={
           <PublicRoute>
             <LandingPage />
           </PublicRoute>
         } />
 
-        {/* Rotas públicas */}
         <Route path="/landingPage" element={
           <PublicRoute>
             <LandingPage />
@@ -87,7 +77,6 @@ export default function AppRoutes() {
           </PublicRoute>
         } />
 
-        {/* Rotas privadas */}
         <Route path="/dashboard" element={
           <PrivateRoute>
             <Dashboard />
@@ -114,7 +103,6 @@ export default function AppRoutes() {
           </PrivateRoute>
         } />
 
-        {/* Redirecionamento genérico */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

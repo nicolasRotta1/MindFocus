@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Phone, User, Trash2, Loader } from 'lucide-react';
-import { fetchCurrentUser, updateCurrentUser, deleteCurrentUser } from '../../Services/Auth';
+import { fetchCurrentUser, updateCurrentUser, deleteCurrentUser } from '../../services/Auth';
 import './profile.css';
 import Sidebar from '../../components/SideBar/sidebar';
 
